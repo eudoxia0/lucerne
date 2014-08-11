@@ -3,13 +3,15 @@
   (:use :cl :trivial-types :cl-annot)
   (:import-from :clack.util.route
                 :<url-rule>
-                :match)
+                :match
+                :make-url-rule)
   (:import-from :clack.request
                 :make-request
                 :request-method
                 :request-uri)
   (:export :<app>
            :not-found
+           :add-route
            :respond))
 (in-package :lucerne)
 (annot:enable-annot-syntax)
@@ -53,6 +55,14 @@
                                              params
                                              req)))))
     (not-found app req)))
+
+(defun add-route (app url method fn)
+  "Add the route that maps `url` and `method` to `fn` to the application `app`."
+  (push (make-instance '<route>
+                       :rule (make-url-rule url :method method)
+                       :method method
+                       :fn fn)
+        (app-routing-rules app)))
 
 ;;; Utilities
 
