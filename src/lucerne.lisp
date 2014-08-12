@@ -12,6 +12,7 @@
   (:export :<app>
            :not-found
            :add-route
+           :defview
            :respond))
 (in-package :lucerne)
 (annot:enable-annot-syntax)
@@ -63,6 +64,22 @@
                        :method method
                        :fn fn)
         (app-routing-rules app)))
+
+;;; Externals
+
+;; A simple macro to define a view, because who is going to remember to type the
+;; argument list?
+(defmacro defview (name (&rest args) &rest body)
+  "Define a view. The body of the view implicitly has access to the request
+  object under the name `req`."
+  `(defun ,(intern (symbol-name name)) (params req)
+     ;; Here, we extract arguments from the params plist into the arguments
+     ;; defined in the argument list
+     (let ,(mapcar #'(lambda (arg)
+                       `(,arg (getf params ,(intern (symbol-name arg)
+                                                    :keyword))))
+                   args)
+       ,@body)))
 
 ;;; Utilities
 
