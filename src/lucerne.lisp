@@ -13,6 +13,7 @@
            :not-found
            :add-route
            :defview
+           :route
            :respond))
 (in-package :lucerne)
 (annot:enable-annot-syntax)
@@ -80,6 +81,25 @@
                                                     :keyword))))
                    args)
        ,@body)))
+
+;; Route annotation
+(annot:defannotation route (app config body) (:arity 3)
+  (let* ((view (second body)))
+    (if (atom config)
+        ;; The config is just a URL
+        `(progn
+           ,body
+           (lucerne:add-route ,app
+                              ,config
+                              :get
+                              #',view))
+        ;; The config is a (<method> <url>) pair
+        `(progn
+           ,body
+           (lucerne:add-route ,app
+                              ,(second config)
+                              ,(first config)
+                              #',view)))))
 
 ;;; Utilities
 
