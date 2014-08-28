@@ -14,6 +14,7 @@
            :add-route
            :defview
            :route
+           :defapp
            :respond))
 (in-package :lucerne)
 (annot:enable-annot-syntax)
@@ -100,6 +101,11 @@
                               ,(second config)
                               ,(first config)
                               #',view)))))
+
+;; Define an application
+(defmacro defapp (name)
+  "Define an application."
+  `(defparameter ,name (make-instance 'lucerne:<app>)))
 
 ;;; Utilities
 
