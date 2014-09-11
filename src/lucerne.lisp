@@ -16,6 +16,7 @@
            :route
            :defapp
            :start
+           :stop
            :respond))
 (in-package :lucerne)
 (annot:enable-annot-syntax)
@@ -140,6 +141,15 @@ running, it restarts it and returns nil."
        (setf (gethash ,app *handlers*) handler)
        ;; If it was rebooted, return nil. Otherwise t.
        (not rebooted))))
+
+(defmacro stop (app)
+  "If `app` is running, stop it and return T. Otherwise, do nothing and
+return NIL."
+  `(awhen (gethash ,app *handlers*)
+     ;; The handler exists, so the app is up and running. Stop it, and return t.
+     (clack:stop it)
+     (remhash ,app *handlers*)
+     t))
 
 ;;; Utilities
 
