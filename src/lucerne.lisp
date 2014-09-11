@@ -17,7 +17,8 @@
            :defapp
            :start
            :stop
-           :respond))
+           :respond
+           :redirect))
 (in-package :lucerne)
 (annot:enable-annot-syntax)
 
@@ -158,3 +159,10 @@ return NIL."
   (list status
         (list :content-type type)
         (list body)))
+
+(defun redirect (url &key (status 302))
+  "Redirect a user to `url`, optionally specifying a status code `status` (302
+by default)."
+  (list status
+        (list :location url)
+        (list "")))
