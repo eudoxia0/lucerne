@@ -18,7 +18,8 @@
            :start
            :stop
            :respond
-           :redirect))
+           :redirect
+           :session))
 (in-package :lucerne)
 (annot:enable-annot-syntax)
 
@@ -166,3 +167,7 @@ by default)."
   (list status
         (list :location url)
         (list "")))
+
+(defmacro session (req)
+  "Extract the session hash table from a request.x"
+  `(getf (env ,req) :clack.session))
