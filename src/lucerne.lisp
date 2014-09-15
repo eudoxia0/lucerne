@@ -8,7 +8,9 @@
   (:import-from :clack.request
                 :make-request
                 :request-method
-                :request-uri)
+                :request-uri
+                :parameter
+                :env)
   (:export :<app>
            :not-found
            :add-route
@@ -171,3 +173,14 @@ by default)."
 (defmacro session (req)
   "Extract the session hash table from a request.x"
   `(getf (env ,req) :clack.session))
+
+(defmacro with-params (req params &rest body)
+  "Extract the parameters in `param` from the request `req`, and bind them for
+use in `body`."
+  `(let ,(mapcar #'(lambda (param)
+                     `(,param (parameter ,req
+                                         ,(intern (string-downcase
+                                                   (symbol-name param))
+                                                  :keyword))))
+                 params)
+     ,@body))
