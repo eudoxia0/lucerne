@@ -21,7 +21,9 @@
            :stop
            :respond
            :redirect
-           :session))
+           :session
+           :with-params
+           :render-template))
 (in-package :lucerne)
 (annot:enable-annot-syntax)
 
@@ -184,3 +186,7 @@ use in `body`."
                                                   :keyword))))
                  params)
      ,@body))
+
+(defmacro render-template (template-name &rest args)
+  "Render an Eco template `template-name` passing arguments `args`."
+  `(respond (,template-name ,@args)))
