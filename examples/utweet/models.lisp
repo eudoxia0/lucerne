@@ -15,7 +15,17 @@
            :<tweet>
            :author
            :date
-           :text))
+           :text
+           ;; Utility functions
+           :register
+           :followers
+           :following
+           :follower-summary
+           :following-summary
+           :tweet
+           :user-timeline
+           :user-tweets
+           :follow))
 (in-package :utweet.models)
 (annot:enable-annot-syntax)
 
@@ -66,3 +76,57 @@
   (text :type text)
   (date :type timestamp)
   (:documentation "A tweet."))
+
+;;; Some utility functions
+
+(defun register (username full-name email password)
+  "Register the user. Passwords are hashed."
+  (create '<user> :username username
+                  :full-name full-name
+                  :email email
+                  :password (cl-pass:hash password)
+                  ;; Get the user's Gravatar URL in 120px
+                  :avatar-url (avatar-api:gravatar email 120)))
+
+(defun followers (user)
+  "List of IDs of users that follow `user`."
+  (loop for sub in (filter '<subscription> :target (id user)) collecting
+    (follower sub)))
+
+(defun following (user)
+  "List of IDs of users followed by `user`."
+  (loop for sub in (filter '<subscription> :follower (id user)) collecting
+    (target sub)))
+
+(defun follower-summary (user)
+  "Username, full name, and avatar URL of `user`'s followers."
+  (query (select (:username :full-name :avatar-url)
+           (from '<user>)
+           (where (:in :id (followers user))))))
+
+(defun following-summary (user)
+  "Username, full name, and avatar URL of the users that follow `user`."
+  (query (select (:username :full-name :avatar-url)
+           (from '<user>)
+           (where (:in :id (following user))))))
+
+(defun tweet (author text)
+  (create '<tweet> :author (id author) :text text :date (local-time:now)))
+
+(defun user-timeline (user)
+  "Find the tweets for this user's timeline."
+  (let* ((following-ids (following user))
+         ;; Here we use the SQL DSL instead of Crane's (intentionally) simple and
+         ;; limited interface.
+         (tweets (query (select :*
+                          (from '<tweet>)
+                          (where (:in :author following-ids))))))
+    (loop for tweet-plist in tweets collecting
+      (plist->object '<tweet> tweet-plist))))
+
+(defun user-tweets (user)
+  "Return a user's tweets, sorted through time"
+  (filter '<tweet> :author (id user)))
+
+(defun follow (follower target)
+  (create '<subscription> :follower (id follower) :target (id target)))
