@@ -15,6 +15,8 @@
            :not-found
            :add-route
            :defview
+           :params
+           :req
            :route
            :defapp
            :start

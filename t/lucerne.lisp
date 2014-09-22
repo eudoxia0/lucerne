@@ -38,4 +38,55 @@
       (with-params req (a b)
         (respond (format nil "~A ~A" a b))))))
 
+(defparameter +port+ 4545)
+
+(defun make-url (rest)
+  (concatenate 'string
+               (format nil "http://localhost:~A/" +port+)
+               rest))
+
+(test (bring-up :depends-on define-routes)
+  (is-true
+   ;; Starting the server for the first time
+   (start app :port +port+))
+  (is-false
+   ;; Restarting the server
+   (start app :port +port+)))
+
+(test (views-work :depends-on bring-up)
+  (is
+   (equal "<h1>Welcome to Lucerne</h1>"
+          (drakma:http-request (make-url ""))))
+  (is
+   (equal "Hello, eudoxia!"
+          (drakma:http-request (make-url "greet/eudoxia"))))
+  (is
+   (equal "2"
+          (drakma:http-request (make-url "add/1/1"))))
+  (is
+   (equal "😸"
+          (drakma:http-request (make-url "unicode"))))
+  (is-true
+   (puri:uri= (puri:uri "http://example.com/")
+              (multiple-value-bind (body status params uri &rest others)
+                  (drakma:http-request (make-url "redirect"))
+                uri)))
+  (is
+   (equal "1 2"
+          (drakma:http-request (make-url "post")
+                               :method :post
+                               :parameters '(("a" . "1")
+                                             ("b" . "2")))))
+  (is
+   (equal "Not found"
+          (drakma:http-request (make-url "no-such-view")))))
+
+(test (bring-down :depends-on bring-up)
+  (is-true
+   ;; Stop the app
+   (stop app))
+  (is-false
+   ;; Try to stop it again, should do nothing and return NIL
+   (stop app)))
+
 (run! 'basic)
