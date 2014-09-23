@@ -130,3 +130,16 @@
 
 (defun follow (follower target)
   (create '<subscription> :follower (id follower) :target (id target)))
+
+;;; Create some example data
+
+(let ((eudox (register "eudoxia" "eudoxia" "black.linen99@gmail.com" "pass"))
+      (john  (register "john" "John Doe" "jdoe@initech.com" "test"))
+      (jane  (register "jane" "Jane Doe" "jane.doe@initech.com" "test")))
+  ;; Make eudoxia follow both
+  (follow eudox john)
+  (follow eudox jane)
+  ;; Now write some test tweets
+  (tweet john "Test message BEEP")
+  (tweet jane "Test message BOOP")
+  (tweet john "BEEP BOOP feed me followers"))
