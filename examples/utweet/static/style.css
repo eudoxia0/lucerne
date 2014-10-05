@@ -1,0 +1,53 @@
+@import url(http://fonts.googleapis.com/css?family=Source+Sans+Pro);
+
+/* General CSS */
+
+h1, h2, h3, h4 {
+    font-family: 'Source Sans Pro', sans-serif;
+}
+
+body, html {
+    height:100%;
+    overflow: auto;
+}
+
+/* Panels */
+
+.panel {
+    padding: 10px;
+    margin: 75px auto 0;
+    width: 60%;
+}
+
+.panel-heading {
+    background-color: #fff !important;
+    padding-bottom: 35px;
+    overflow: auto;
+}
+
+/* Sign up/in page */
+
+#landing {
+    background-image: -webkit-gradient(linear, left bottom, right top, color-stop(0, #787FD5), color-stop(1, #9EDDFF));
+    background-image: -webkit-linear-gradient(right top, #787FD5 0%, #9EDDFF 100%);
+    background-image: -moz-linear-gradient(right top, #787FD5 0%, #9EDDFF 100%);
+    background-image: -ms-linear-gradient(right top, #787FD5 0%, #9EDDFF 100%);
+    background-image: -o-linear-gradient(right top, #787FD5 0%, #9EDDFF 100%);
+    background-image: linear-gradient(to right top, #787FD5 0%, #9EDDFF 100%);
+}
+
+#welcome-panel .panel-heading {
+    text-align: center;
+}
+
+/* Profile page */
+
+#names {
+    list-style-type: none;
+    padding-left: 0;
+}
+
+#names .full {
+    font-size: 32px;
+    font-style: bold;
+}
