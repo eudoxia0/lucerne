@@ -49,3 +49,37 @@
   `(defparameter ,name (make-instance 'lucerne:<app>
                                       :middleware ,middleware
                                       :sub-apps ,sub-apps)))
+
+(defmethod get-middlewares ((app <app>))
+  "Recursively search an application and its sub-applications, extracting its
+  middleware list."
+  (append (middlewares app)
+          (reduce #'append
+                  (loop for sub-app in (sub-apps app) collecting
+                    (get-middlewares app)))))
+
+(defmethod apply-middlewares ((app <app>) middleware-list)
+  "Wrap the application in middlewares."
+  (if middleware-list
+      (clack:wrap (first middleware-list)
+                  (apply-middlewares app (rest middleware-list)))
+      app))
+
+(defmethod apply-mounts ((app <app>))
+  "Recursively go through an app, mounting sub-applications to their prefix URLs
+and returning the resulting mounted app."
+  (if (sub-apps app)
+      (let ((resulting-app (make-instance 'clack.app.urlmap:<clack-app-urlmap>)))
+        (loop for mount-point in (sub-apps app) do
+          (clack.app.urlmap:mount resulting-app
+                                  (prefix mount-point)
+                                  (apply-mounts (app mount-point))))
+        resulting-app)
+      app))
+
+(defmethod build-app ((app <app>))
+  "Take a Lucerne application, and recursively mount sub-applications and apply
+  middleware."
+  ;; We apply middlewares first, because if we applied the mounts first, we'd
+  ;; might lose the middlewares slot in the app instances.
+  (apply-mounts (apply-middlewares app)))
