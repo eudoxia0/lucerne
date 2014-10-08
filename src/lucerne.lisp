@@ -34,21 +34,40 @@
 (defclass <route> ()
   ((rule :initarg :rule
          :reader route-rule
-         :type <url-rule>)
+         :type <url-rule>
+         :documentation "Routing rule.")
    (method :initarg :method
            :reader route-method
-           :type symbol)
+           :type symbol
+           :documentation "The HTTP method.")
    (fn :initarg :fn
        :reader route-function
-       :type function))
-  (:documentation "Maps a path and method to a view function."))
+       :type function
+       :documentation "The function to call when the rule and method match."))
+  (:documentation "Maps a path and HTTP method to a view function."))
 
 (defclass <app> (clack:<component>)
   ((routes :initarg :routing-rules
            :accessor app-routing-rules
            :initform nil
-           :type (proper-list <route>)))
+           :type (proper-list <route>)
+           :documentation "The application's routes.")
+   (middleware :initarg :middleware
+               :accessor middleware
+               :initform nil
+               :type list
+               :documentation "List of middlewares the application will run.")
+   (sub-apps :initarg :sub-apps
+             :accessor sub-apps
+             :initform nil
+             :documentation "A list of sub-application mount points."))
   (:documentation "The base class for all Lucerne applications."))
+
+(defmacro defapp (name &key middleware sub-apps)
+  "Define an application."
+  `(defparameter ,name (make-instance 'lucerne:<app>
+                                      :middleware ,middleware
+                                      :sub-apps ,sub-apps)))
 
 (defmethod not-found ((app <app>) req)
   "The basic `not-found` screen: Returns HTTP 404 and the text 'Not found'."
@@ -77,10 +96,6 @@
                        :fn fn)
         (app-routing-rules app)))
 
-;;; Externals
-
-;; A simple macro to define a view, because who is going to remember to type the
-;; argument list?
 (defmacro defview (name (&rest args) &rest body)
   "Define a view. The body of the view implicitly has access to the request
   object under the name `req`."
@@ -93,7 +108,6 @@
                    args)
        ,@body)))
 
-;; Route annotation
 (annot:defannotation route (app config body) (:arity 3)
   (let* ((view (second body)))
     (if (atom config)
@@ -111,11 +125,6 @@
                               ,(second config)
                               ,(first config)
                               #',view)))))
-
-;; Define an application
-(defmacro defapp (name)
-  "Define an application."
-  `(defparameter ,name (make-instance 'lucerne:<app>)))
 
 (defparameter *handlers*
   (make-hash-table)
