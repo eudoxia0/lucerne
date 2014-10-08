@@ -71,10 +71,10 @@
              :documentation "A list of sub-application mount points."))
   (:documentation "The base class for all Lucerne applications."))
 
-(defmacro defapp (name &key middleware sub-apps)
+(defmacro defapp (name &key middlewares sub-apps)
   "Define an application."
   `(defparameter ,name (make-instance 'lucerne:<app>
-                                      :middleware ,middleware
+                                      :middlewares ,middlewares
                                       :sub-apps ,sub-apps)))
 
 (defmethod get-middlewares ((app <app>))
