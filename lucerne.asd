@@ -10,7 +10,11 @@
                :anaphora)
   :components ((:module "src"
                 :components
-                ((:file "lucerne"))))
+                ((:file "package")
+                 (:file "app")
+                 (:file "views")
+                 (:file "handlers")
+                 (:file "http"))))
   :description "A Clack-based microframework."
   :long-description
   #.(uiop:read-file-string
