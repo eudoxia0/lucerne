@@ -85,12 +85,15 @@
                   (loop for sub-app in (sub-apps app) collecting
                     (get-middlewares app)))))
 
-(defmethod apply-middlewares ((app <app>) middleware-list)
-  "Wrap the application in middlewares."
+(defmethod apply-middlewares-list ((app <app>) middleware-list)
   (if middleware-list
       (clack:wrap (first middleware-list)
-                  (apply-middlewares app (rest middleware-list)))
+                  (apply-middlewares-list app (rest middleware-list)))
       app))
+
+(defmethod apply-middlewares ((app <app>))
+  "Wrap the application in middlewares."
+  (apply-middlewares-list app (middlewares app)))
 
 (defmethod apply-mounts ((app <app>))
   "Recursively go through an app, mounting sub-applications to their prefix URLs
@@ -100,7 +103,7 @@ and returning the resulting mounted app."
         (loop for mount-point in (sub-apps app) do
           (clack.app.urlmap:mount resulting-app
                                   (prefix mount-point)
-                                  (apply-mounts (app mount-point))))
+                                  (apply-mounts (sub-app mount-point))))
         resulting-app)
       app))
 
