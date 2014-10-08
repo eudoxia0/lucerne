@@ -1,3 +1,30 @@
+;;;; Here we define the class foundations of Lucerne. There are applications,
+;;;; which have routes, middleware and sub-applications.
+;;;;
+;;;; Routes map a particular URL pattern and HTTP method to a function that
+;;;; takes a request and returns a response to the client.
+;;;;
+;;;; Middleware is what we all know and love: An item of Clack middleware is a
+;;;; class that wraps a request to perform some preprocessing, or regular
+;;;; processing. For example, serving files, guarding against CSRF attacks,
+;;;; etc.
+;;;;
+;;;; Sub applications give us the ability to compose different applications. For
+;;;; example, you can have an `admin` application which implements an
+;;;; administration panel, and has its own middleware (For serving the CSS and
+;;;; JS used by the panel). You can integrate this application into your own
+;;;; simply by adding it as a sub-application under a mount point (Most
+;;;; typically "/admin/"). The ability to painlessly compose applications is
+;;;; extremely valuable, as it allows you to easily modularize an application,
+;;;; and even separate some functionality into a completely separate library.
+;;;;
+;;;; Lucerne applications are not strictly the same as Clack applications:
+;;;; Rather than applying middleware and mounting sub-applications when an app
+;;;; is defined, those things are kept in slots. When an application is started,
+;;;; Lucerne recursively tranverses the tree of nested applications and
+;;;; sub-applications, mounts them all together, and ensures all their
+;;;; middleware is applied.
+
 (in-package :lucerne)
 (annot:enable-annot-syntax)
 
