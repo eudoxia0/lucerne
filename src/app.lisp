@@ -100,10 +100,12 @@
 and returning the resulting mounted app."
   (if (sub-apps app)
       (let ((resulting-app (make-instance 'clack.app.urlmap:<clack-app-urlmap>)))
+        (log:info "Mounting ~A sub-applications." (length (sub-apps app)))
         (loop for mount-point in (sub-apps app) do
+          (log:info "Mounting a sub-application to ~S." (prefix mount-point))
           (clack.app.urlmap:mount resulting-app
                                   (prefix mount-point)
-                                  (apply-mounts (sub-app mount-point))))
+                                  (build-app (sub-app mount-point))))
         resulting-app)
       app))
 

@@ -8,6 +8,7 @@
   (:import-from :clack.request
                 :make-request
                 :request-method
+                :script-name
                 :request-uri
                 :parameter
                 :env)
