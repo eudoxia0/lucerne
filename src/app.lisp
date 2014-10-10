@@ -97,15 +97,15 @@
   "Recursively go through an app, mounting sub-applications to their prefix URLs
 and returning the resulting mounted app."
   (let ((resulting-app (make-instance 'clack.app.urlmap:<clack-app-urlmap>)))
-    (log:info "Mounting ~A sub-applications." (length (sub-apps app)))
     (clack.app.urlmap:mount resulting-app
                             "/"
                             app)
     (loop for mount-point in (sub-apps app) do
       (log:info "Mounting a sub-application to ~S." (prefix mount-point))
-      (clack.app.urlmap:mount resulting-app
-                              (prefix mount-point)
-                              (build-app (sub-app mount-point))))
+      (let ((sub-app (build-app (sub-app mount-point))))
+        (clack.app.urlmap:mount resulting-app
+                                (prefix mount-point)
+                                sub-app)))
     resulting-app))
 
 (defmethod build-app ((app <app>))

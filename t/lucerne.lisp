@@ -98,8 +98,7 @@
 (defapp subapp-1
   :sub-apps (("/subsub" sub-sub-app)))
 
-(defapp subapp-2
-  :sub-apps (("/subsub" sub-sub-app)))
+(defapp subapp-2)
 
 (defapp subapp-3)
 
@@ -143,10 +142,7 @@
           (drakma:http-request (make-url "sub3/"))))
   (is
    (equal "sub-sub app"
-          (drakma:http-request (make-url "sub1/subsub/"))))
-  (is
-   (equal "sub-sub app"
-          (drakma:http-request (make-url "sub2/subsub/")))))
+          (drakma:http-request (make-url "sub1/subsub/")))))
 
 (test (bring-down-subapps :depends-on bring-up-subapps)
   (is-true
