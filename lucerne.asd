@@ -7,7 +7,8 @@
                :trivial-types
                :clack-errors
                :eco
-               :anaphora)
+               :anaphora
+               :log4cl)
   :components ((:module "src"
                 :components
                 ((:file "package")
