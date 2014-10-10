@@ -4,6 +4,13 @@
 (in-package :lucerne-test)
 (annot:enable-annot-syntax)
 
+(defparameter +port+ 4545)
+
+(defun make-url (rest)
+  (concatenate 'string
+               (format nil "http://localhost:~A/" +port+)
+               rest))
+
 (def-suite basic
   :description "Basic tests.")
 (in-suite basic)
@@ -31,19 +38,12 @@
   (finishes
     @route app "/redirect"
     (defview redirect-test ()
-      (redirect "http://example.com/")))
+      (redirect (make-url ""))))
   (finishes
     @route app (:post "/post")
     (defview post-test ()
       (with-params req (a b)
         (respond (format nil "~A ~A" a b))))))
-
-(defparameter +port+ 4545)
-
-(defun make-url (rest)
-  (concatenate 'string
-               (format nil "http://localhost:~A/" +port+)
-               rest))
 
 (test (bring-up :depends-on define-routes)
   (is-true
@@ -67,7 +67,7 @@
    (equal "😸"
           (drakma:http-request (make-url "unicode"))))
   (is-true
-   (puri:uri= (puri:uri "http://example.com/")
+   (puri:uri= (puri:uri (make-url ""))
               (multiple-value-bind (body status params uri &rest others)
                   (drakma:http-request (make-url "redirect"))
                 uri)))
@@ -89,7 +89,16 @@
    ;; Try to stop it again, should do nothing and return NIL
    (stop app)))
 
-(defapp subapp-1)
+(defapp sub-sub-app)
+
+@route sub-sub-app "/"
+(defview sub-sub-app-index ()
+  (respond "sub-sub app"))
+
+(defapp subapp-1
+  :sub-apps (list (make-instance 'lucerne::<prefix-mount>
+                                 :prefix "/subsub/"
+                                 :sub-app sub-sub-app)))
 
 (defapp subapp-2)
 
@@ -125,6 +134,9 @@
   (is
    (equal "subapp 2"
           (drakma:http-request (make-url "sub2/"))))
+  (is
+   (equal "sub-sub app"
+          (drakma:http-request (make-url "sub1/subsub/"))))
   (is-true
    (stop parent-app)))
 
