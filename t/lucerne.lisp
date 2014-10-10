@@ -89,4 +89,43 @@
    ;; Try to stop it again, should do nothing and return NIL
    (stop app)))
 
+(defapp subapp-1)
+
+(defapp subapp-2)
+
+@route subapp-1 "/test"
+(defview subapp-1-index ()
+  (respond "subapp 1"))
+
+@route subapp-2 "/"
+(defview subapp-2-index ()
+  (respond "subapp 2"))
+
+(defapp parent-app
+  :sub-apps (list (make-instance 'lucerne::<prefix-mount>
+                                 :prefix "/sub1/"
+                                 :sub-app subapp-1)
+                  (make-instance 'lucerne::<prefix-mount>
+                                 :prefix "/sub2/"
+                                 :sub-app subapp-2)))
+
+@route parent-app "/test"
+(defview parent-index ()
+  (respond "parent app"))
+
+(test (sub-apps-work :depends-on views-work)
+  (is-true
+   (start parent-app :port +port+))
+  (is
+   (equal "parent app"
+          (drakma:http-request (make-url "test"))))
+  (is
+   (equal "subapp 1"
+          (drakma:http-request (make-url "sub1/test"))))
+  (is
+   (equal "subapp 2"
+          (drakma:http-request (make-url "sub2/"))))
+  (is-true
+   (stop parent-app)))
+
 (run! 'basic)
