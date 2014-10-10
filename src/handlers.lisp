@@ -16,7 +16,7 @@ returns `t`. If the server was running, it restarts it and returns nil."
       (clack:stop it))
     (let ((handler
             (clack:clackup
-             (lucerne::build-app app)
+             app
              :port port
              :server :hunchentoot)))
       (setf (gethash app *handlers*) handler)

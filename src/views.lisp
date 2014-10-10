@@ -27,7 +27,10 @@
             (return-from clack:call (funcall (route-function route)
                                              params
                                              req)))))
-    (not-found app req)))
+    (let ((internal-call (clack:call (internal-app app) env)))
+      (if (not (eql 404 (first internal-call)))
+          internal-call
+          (not-found app req)))))
 
 (defun add-route (app url method fn)
   "Add the route that maps `url` and `method` to `fn` to the application `app`."
