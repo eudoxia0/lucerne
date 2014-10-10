@@ -6,11 +6,17 @@
   (declare (ignore req))
   (respond "Not found" :type "text/plain" :status 404))
 
+(defun strip-app-prefix (url app-prefix)
+  (if (> (length app-prefix) 0)
+      (subseq url (1- (length app-prefix)))
+      url))
+
 (defmethod clack:call ((app <app>) env)
   "Routes the request determined by `env` on the application `app`."
   (let* ((req    (make-request env))
          (method (request-method req))
-         (uri    (request-uri req)))
+         (app-prefix (script-name req))
+         (uri    (strip-app-prefix (request-uri req) app-prefix)))
     (loop for route in (app-routing-rules app) do
       (multiple-value-bind (url params)
           (match (route-rule route) method uri)
