@@ -8,7 +8,7 @@
 
 (defun strip-app-prefix (url app-prefix)
   (if (> (length app-prefix) 0)
-      (subseq url (length app-prefix))
+      (subseq url (1- (length app-prefix)))
       url))
 
 (defmethod clack:call ((app <app>) env)
@@ -17,9 +17,10 @@
          (method (request-method req))
          (app-prefix (script-name req))
          (uri    (strip-app-prefix (request-uri req) app-prefix)))
-    ;(log:info (request-uri req))
-    ;(log:info app-prefix)
-    ;(log:info uri)
+    (format t "~%URI: ~A~%Prefix: ~A~%Stripped: ~A~%"
+            (request-uri req)
+            app-prefix
+            uri)
     (loop for route in (app-routing-rules app) do
       (multiple-value-bind (url params)
           (match (route-rule route) method uri)
@@ -27,10 +28,7 @@
             (return-from clack:call (funcall (route-function route)
                                              params
                                              req)))))
-    (let ((internal-call (clack:call (internal-app app) env)))
-      (if (not (eql 404 (first internal-call)))
-          internal-call
-          (not-found app req)))))
+    (not-found app req)))
 
 (defun add-route (app url method fn)
   "Add the route that maps `url` and `method` to `fn` to the application `app`."

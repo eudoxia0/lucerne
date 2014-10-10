@@ -59,30 +59,56 @@
            :initform nil
            :type (proper-list <route>)
            :documentation "The application's routes.")
-   (internal-app :initarg :internal-app
-                 :accessor internal-app))
+   (middlewares :initarg :middlewares
+                :accessor middlewares
+                :initform nil
+                :type list
+                :documentation "List of middlewares the application will run.")
+   (sub-apps :initarg :sub-apps
+             :accessor sub-apps
+             :initform nil
+             :type (list-of <mount-point>)
+             :documentation "A list of sub-application mount points."))
   (:documentation "The base class for all Lucerne applications."))
 
 (defmacro defapp (name &key middlewares sub-apps)
   "Define an application."
   `(defparameter ,name
      (make-instance 'lucerne:<app>
-                    :internal-app
-                    (let ((mounts (list ,@(loop for app in sub-apps collecting
-                                            `(make-instance '<prefix-mount>
-                                                            :sub-app (second (list ,@app))
-                                                            :prefix (first (list ,@app)))))))
-                      (clack.builder:builder
-                       ,@middlewares
-                       (apply-mounts mounts))))))
+                    :sub-apps
+                    (list ,@(loop for app in sub-apps collecting
+                                  `(make-instance '<prefix-mount>
+                                                  :sub-app (second (list ,@app))
+                                                  :prefix (first (list ,@app)))))
+                    :middlewares
+                    (list ,@middlewares))))
 
+(defun apply-middlewares-list (app middleware-list)
+  (if middleware-list
+      (clack:wrap (first middleware-list)
+                  (apply-middlewares-list app (rest middleware-list)))
+      app))
 
-(defun apply-mounts (mount-points)
-  (log:info "Mounting ~A sub-applications." (length mount-points))
-  (let ((urlmap (make-instance 'clack.app.urlmap:<clack-app-urlmap>)))
-    (loop for mount-point in mount-points do
+(defmethod apply-middlewares ((app <app>))
+  "Wrap the application in middlewares."
+  (apply-middlewares-list app (middlewares app)))
+
+(defun apply-mounts (app)
+  "Recursively go through an app, mounting sub-applications to their prefix URLs
+and returning the resulting mounted app."
+  (let ((resulting-app (make-instance 'clack.app.urlmap:<clack-app-urlmap>)))
+    (log:info "Mounting ~A sub-applications." (length (sub-apps app)))
+    (clack.app.urlmap:mount resulting-app
+                            "/"
+                            app)
+    (loop for mount-point in (sub-apps app) do
       (log:info "Mounting a sub-application to ~S." (prefix mount-point))
-      (clack.app.urlmap:mount urlmap
+      (clack.app.urlmap:mount resulting-app
                               (prefix mount-point)
-                              (sub-app mount-point)))
-    urlmap))
+                              (build-app (sub-app mount-point))))
+    resulting-app))
+
+(defmethod build-app ((app <app>))
+  "Take a Lucerne application, and recursively mount sub-applications and apply
+  middleware."
+  (apply-mounts (apply-middlewares app)))
