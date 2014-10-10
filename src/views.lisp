@@ -8,7 +8,7 @@
 
 (defun strip-app-prefix (url app-prefix)
   (if (> (length app-prefix) 0)
-      (subseq url (1- (length app-prefix)))
+      (subseq url (length app-prefix))
       url))
 
 (defmethod clack:call ((app <app>) env)
@@ -17,6 +17,9 @@
          (method (request-method req))
          (app-prefix (script-name req))
          (uri    (strip-app-prefix (request-uri req) app-prefix)))
+    ;(log:info (request-uri req))
+    ;(log:info app-prefix)
+    ;(log:info uri)
     (loop for route in (app-routing-rules app) do
       (multiple-value-bind (url params)
           (match (route-rule route) method uri)

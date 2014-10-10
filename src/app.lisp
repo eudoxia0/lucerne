@@ -77,14 +77,6 @@
                                       :middlewares ,middlewares
                                       :sub-apps ,sub-apps)))
 
-(defmethod get-middlewares ((app <app>))
-  "Recursively search an application and its sub-applications, extracting its
-  middleware list."
-  (append (middlewares app)
-          (reduce #'append
-                  (loop for sub-app in (sub-apps app) collecting
-                    (get-middlewares app)))))
-
 (defmethod apply-middlewares-list ((app <app>) middleware-list)
   (if middleware-list
       (clack:wrap (first middleware-list)
@@ -112,6 +104,4 @@ and returning the resulting mounted app."
 (defmethod build-app ((app <app>))
   "Take a Lucerne application, and recursively mount sub-applications and apply
   middleware."
-  ;; We apply middlewares first, because if we applied the mounts first, we'd
-  ;; might lose the middlewares slot in the app instances.
   (apply-mounts (apply-middlewares app)))

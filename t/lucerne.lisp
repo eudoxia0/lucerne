@@ -97,10 +97,12 @@
 
 (defapp subapp-1
   :sub-apps (list (make-instance 'lucerne::<prefix-mount>
-                                 :prefix "/subsub/"
+                                 :prefix "/subsub"
                                  :sub-app sub-sub-app)))
 
 (defapp subapp-2)
+
+(defapp subapp-3)
 
 @route subapp-1 "/test"
 (defview subapp-1-index ()
@@ -110,13 +112,20 @@
 (defview subapp-2-index ()
   (respond "subapp 2"))
 
+@route subapp-3 "/"
+(defview subapp-3-index ()
+  (respond "subapp 3"))
+
 (defapp parent-app
   :sub-apps (list (make-instance 'lucerne::<prefix-mount>
-                                 :prefix "/sub1/"
+                                 :prefix "/sub1"
                                  :sub-app subapp-1)
                   (make-instance 'lucerne::<prefix-mount>
-                                 :prefix "/sub2/"
-                                 :sub-app subapp-2)))
+                                 :prefix "/sub2"
+                                 :sub-app subapp-2)
+                  (make-instance 'lucerne::<prefix-mount>
+                                 :prefix "/sub3"
+                                 :sub-app subapp-3)))
 
 @route parent-app "/test"
 (defview parent-index ()
@@ -134,6 +143,9 @@
   (is
    (equal "subapp 2"
           (drakma:http-request (make-url "sub2/"))))
+  (is
+   (equal "subapp 3"
+          (drakma:http-request (make-url "sub3/"))))
   (is
    (equal "sub-sub app"
           (drakma:http-request (make-url "sub1/subsub/"))))
