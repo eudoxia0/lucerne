@@ -96,9 +96,7 @@
   (respond "sub-sub app"))
 
 (defapp subapp-1
-  :sub-apps (list (make-instance 'lucerne::<prefix-mount>
-                                 :prefix "/subsub"
-                                 :sub-app sub-sub-app)))
+  :sub-apps (("/subsub" sub-sub-app)))
 
 (defapp subapp-2)
 
@@ -117,23 +115,19 @@
   (respond "subapp 3"))
 
 (defapp parent-app
-  :sub-apps (list (make-instance 'lucerne::<prefix-mount>
-                                 :prefix "/sub1"
-                                 :sub-app subapp-1)
-                  (make-instance 'lucerne::<prefix-mount>
-                                 :prefix "/sub2"
-                                 :sub-app subapp-2)
-                  (make-instance 'lucerne::<prefix-mount>
-                                 :prefix "/sub3"
-                                 :sub-app subapp-3)))
+  :sub-apps (("/sub1" subapp-1)
+             ("/sub2" subapp-2)
+             ("/sub3" subapp-3)))
 
 @route parent-app "/test"
 (defview parent-index ()
   (respond "parent app"))
 
-(test (sub-apps-work :depends-on views-work)
+(test (bring-up-subapps :depends-on views-work)
   (is-true
-   (start parent-app :port +port+))
+   (start parent-app :port +port+)))
+
+(test (sub-apps-work :depends-on bring-up-subapps)
   (is
    (equal "parent app"
           (drakma:http-request (make-url "test"))))
@@ -148,7 +142,9 @@
           (drakma:http-request (make-url "sub3/"))))
   (is
    (equal "sub-sub app"
-          (drakma:http-request (make-url "sub1/subsub/"))))
+          (drakma:http-request (make-url "sub1/subsub/")))))
+
+(test (bring-down-subapps :depends-on bring-up-subapps)
   (is-true
    (stop parent-app)))
 
