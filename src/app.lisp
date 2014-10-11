@@ -89,10 +89,6 @@
                   (apply-middlewares-list app (rest middleware-list)))
       app))
 
-(defmethod apply-middlewares ((app <app>))
-  "Wrap the application in middlewares."
-  (apply-middlewares-list app (middlewares app)))
-
 (defun apply-mounts (app)
   "Recursively go through an app, mounting sub-applications to their prefix URLs
 and returning the resulting mounted app."
@@ -111,4 +107,5 @@ and returning the resulting mounted app."
 (defmethod build-app ((app <app>))
   "Take a Lucerne application, and recursively mount sub-applications and apply
   middleware."
-  (apply-mounts (apply-middlewares app)))
+  (apply-middlewares-list (apply-mounts app)
+                          (middlewares app)))

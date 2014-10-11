@@ -17,10 +17,6 @@
          (method (request-method req))
          (app-prefix (script-name req))
          (uri    (strip-app-prefix (request-uri req) app-prefix)))
-    (format t "~%URI: ~A~%Prefix: ~A~%Stripped: ~A~%"
-            (request-uri req)
-            app-prefix
-            uri)
     (loop for route in (app-routing-rules app) do
       (multiple-value-bind (url params)
           (match (route-rule route) method uri)
