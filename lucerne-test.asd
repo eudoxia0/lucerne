@@ -8,4 +8,5 @@
                 :serial t
                 :components
                 ((:file "lucerne")
-                 (:file "urlmap")))))
+                 (:file "urlmap")
+                 (:file "subapps")))))
