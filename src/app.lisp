@@ -24,9 +24,8 @@
 ;;;; Lucerne recursively tranverses the tree of nested applications and
 ;;;; sub-applications, mounts them all together, and ensures all their
 ;;;; middleware is applied.
-
 (in-package :lucerne)
-(annot:enable-annot-syntax)
+
 
 (defclass <route> ()
   ((rule :initarg :rule
@@ -59,53 +58,43 @@
            :initform nil
            :type (proper-list <route>)
            :documentation "The application's routes.")
-   (middlewares :initarg :middlewares
-                :accessor middlewares
-                :initform nil
-                :type list
-                :documentation "List of middlewares the application will run.")
-   (sub-apps :initarg :sub-apps
-             :accessor sub-apps
-             :initform nil
-             :type (list-of <mount-point>)
-             :documentation "A list of sub-application mount points."))
+   (builder-function :initarg :builder-function
+                     :reader builder-function
+                     :type function
+                     :documentation "The function that wraps the app in
+                     middleware and mounts sub-apps, returning a new app."))
   (:documentation "The base class for all Lucerne applications."))
+
+(defmacro make-urlmap (&rest sub-apps)
+  "Create a an app out of many sub-apps, where each sub-app is a `(<prefix>
+<app>) pair."
+  `(let ((urlmap (make-instance 'clack.app.urlmap:<clack-app-urlmap>)))
+     ,@(loop for app in sub-apps collecting
+         `(clack.app.urlmap:mount urlmap
+                                  ,(first app)
+                                  ,(second app)))
+     urlmap))
 
 (defmacro defapp (name &key middlewares sub-apps)
   "Define an application."
   `(defparameter ,name
-     (make-instance 'lucerne:<app>
-                    :sub-apps
-                    (list ,@(loop for app in sub-apps collecting
-                                  `(make-instance '<prefix-mount>
-                                                  :sub-app (second (list ,@app))
-                                                  :prefix (first (list ,@app)))))
-                    :middlewares
-                    (list ,@middlewares))))
-
-(defun apply-middlewares-list (app middleware-list)
-  (if middleware-list
-      (clack:wrap (first middleware-list)
-                  (apply-middlewares-list app (rest middleware-list)))
-      app))
-
-(defun apply-mounts (app)
-  "Recursively go through an app, mounting sub-applications to their prefix URLs
-and returning the resulting mounted app."
-  (let ((resulting-app (make-instance 'clack.app.urlmap:<clack-app-urlmap>)))
-    (clack.app.urlmap:mount resulting-app
-                            "/"
-                            app)
-    (loop for mount-point in (sub-apps app) do
-      (log:info "Mounting a sub-application to ~S." (prefix mount-point))
-      (let ((sub-app (build-app (sub-app mount-point))))
-        (clack.app.urlmap:mount resulting-app
-                                (prefix mount-point)
-                                sub-app)))
-    resulting-app))
+     (make-instance
+      'lucerne:<app>
+      :builder-function
+      (lambda (app)
+        ;; First, wrap the app in its middlewares
+        (let ((mw-wrapped
+                (clack.builder:builder
+                 ,@middlewares
+                 app)))
+          ;; Now, mount sub-apps
+          ,(if sub-apps
+               `(make-urlmap
+                 ("/" mw-wrapped)
+                 ,@sub-apps)
+               `mw-wrapped))))))
 
 (defmethod build-app ((app <app>))
   "Take a Lucerne application, and recursively mount sub-applications and apply
   middleware."
-  (apply-middlewares-list (apply-mounts app)
-                          (middlewares app)))
+  (funcall (builder-function app) app))
