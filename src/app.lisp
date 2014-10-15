@@ -42,16 +42,6 @@
        :documentation "The function to call when the rule and method match."))
   (:documentation "Maps a path and HTTP method to a view function."))
 
-(defclass <mount-point> ()
-  ((sub-app :initarg :sub-app
-            :reader sub-app
-            :type <app>)))
-
-(defclass <prefix-mount> (<mount-point>)
-  ((prefix :initarg :prefix
-           :reader prefix
-           :type string)))
-
 (defclass <app> (clack:<component>)
   ((routes :initarg :routing-rules
            :accessor app-routing-rules
