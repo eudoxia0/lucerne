@@ -13,7 +13,9 @@
    ("/" (make-app "main app"))
    ("/s1/" (lucerne::make-urlmap
             ("/" (make-app "sub app 1"))
-            ("/s/" (make-app "sub sub app"))))
+            ("/s/" (lucerne::make-urlmap
+                    ("/" (make-app "sub sub app"))
+                    ("/test" (make-app "test"))))))
    ("/s2/" (make-app "sub app 2"))))
 
 (defparameter *clack-handler* nil)
@@ -30,6 +32,7 @@
   (is-true (test-view "/" "main app"))
   (is-true (test-view "/s1/" "sub app 1"))
   (is-true (test-view "/s1/s/" "sub sub app"))
+  (is-true (test-view "/s1/s/test" "test"))
   (is-true (test-view "/s2/" "sub app 2")))
 
 (test (bring-down :depends-on bring-up)

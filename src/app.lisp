@@ -78,11 +78,9 @@
                  ,@middlewares
                  app)))
           ;; Now, mount sub-apps
-          ,(if sub-apps
-               `(make-urlmap
-                 ("/" mw-wrapped)
-                 ,@sub-apps)
-               `mw-wrapped))))))
+          (make-urlmap
+           ("/" mw-wrapped)
+           ,@sub-apps))))))
 
 (defmethod build-app ((app <app>))
   "Take a Lucerne application, and recursively mount sub-applications and apply
