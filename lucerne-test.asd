@@ -6,4 +6,5 @@
                :drakma)
   :components ((:module "t"
                 :components
-                ((:file "lucerne")))))
+                ((:file "lucerne")
+                 (:file "urlmap")))))

@@ -96,7 +96,7 @@
   (respond "sub-sub app"))
 
 (defapp subapp-1
-  :sub-apps (("/subsub" sub-sub-app)))
+  :sub-apps (("/subsub/" sub-sub-app)))
 
 (defapp subapp-2)
 
@@ -115,9 +115,9 @@
   (respond "subapp 3"))
 
 (defapp parent-app
-  :sub-apps (("/sub1" subapp-1)
-             ("/sub2" subapp-2)
-             ("/sub3" subapp-3)))
+  :sub-apps (("/sub1/" subapp-1)
+             ("/sub2/" subapp-2)
+             ("/sub3/" subapp-3)))
 
 @route parent-app "/test"
 (defview parent-index ()
