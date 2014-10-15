@@ -93,10 +93,10 @@
 
 @route sub-sub-app "/"
 (defview sub-sub-app-index ()
-  (respond "sub-sub app"))
+  (respond "sub sub app"))
 
 (defapp subapp-1
-  :sub-apps (("/subsub/" sub-sub-app)))
+  :sub-apps (("/s/" sub-sub-app)))
 
 (defapp subapp-2)
 
@@ -104,24 +104,19 @@
 
 @route subapp-1 "/test"
 (defview subapp-1-index ()
-  (respond "subapp 1"))
+  (respond "sub app 1"))
 
 @route subapp-2 "/"
 (defview subapp-2-index ()
-  (respond "subapp 2"))
-
-@route subapp-3 "/"
-(defview subapp-3-index ()
-  (respond "subapp 3"))
+  (respond "sub app 2"))
 
 (defapp parent-app
-  :sub-apps (("/sub1/" subapp-1)
-             ("/sub2/" subapp-2)
-             ("/sub3/" subapp-3)))
+  :sub-apps (("/s1/" subapp-1)
+             ("/s2/" subapp-2)))
 
-@route parent-app "/test"
+@route parent-app "/"
 (defview parent-index ()
-  (respond "parent app"))
+  (respond "main app"))
 
 (test (bring-up-subapps :depends-on views-work)
   (is-true
@@ -129,20 +124,17 @@
 
 (test (sub-apps-work :depends-on bring-up-subapps)
   (is
-   (equal "parent app"
-          (drakma:http-request (make-url "test"))))
+   (equal "main app"
+          (drakma:http-request (make-url ""))))
   (is
-   (equal "subapp 1"
-          (drakma:http-request (make-url "sub1/test"))))
+   (equal "sub app 1"
+          (drakma:http-request (make-url "s1/test"))))
   (is
-   (equal "subapp 2"
-          (drakma:http-request (make-url "sub2/"))))
+   (equal "sub app 2"
+          (drakma:http-request (make-url "s2/"))))
   (is
-   (equal "subapp 3"
-          (drakma:http-request (make-url "sub3/"))))
-  (is
-   (equal "sub-sub app"
-          (drakma:http-request (make-url "sub1/subsub/")))))
+   (equal "sub sub app"
+          (drakma:http-request (make-url "s1/s/")))))
 
 (test (bring-down-subapps :depends-on bring-up-subapps)
   (is-true

@@ -5,6 +5,7 @@
                :fiveam
                :drakma)
   :components ((:module "t"
+                :serial t
                 :components
                 ((:file "lucerne")
                  (:file "urlmap")))))
