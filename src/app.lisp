@@ -62,7 +62,9 @@
      ,@(loop for app in sub-apps collecting
          `(clack.app.urlmap:mount urlmap
                                   ,(first app)
-                                  ,(second app)))
+                                  ,(if (equal (first app) "/")
+                                       (second app)
+                                       `(build-app ,(second app)))))
      urlmap))
 
 (defmacro defapp (name &key middlewares sub-apps)

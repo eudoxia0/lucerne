@@ -21,7 +21,7 @@
   (respond "sub sub app"))
 
 (defapp subapp-1
-  :sub-apps (("/s/" sub-sub-app)))
+  :sub-apps (("/s" sub-sub-app)))
 
 (defapp subapp-2)
 
@@ -34,14 +34,14 @@
   (respond "sub app 2"))
 
 (defapp parent-app
-  :sub-apps (("/s1/" subapp-1)
-             ("/s2/" subapp-2)))
+  :sub-apps (("/s1" subapp-1)
+             ("/s2" subapp-2)))
 
 @route parent-app "/"
 (defview parent-index ()
   (respond "main app"))
 
-(test (bring-up-subapps :depends-on bring-up)
+(test bring-up-subapps
   (is-true
    (start parent-app :port +port+)))
 
