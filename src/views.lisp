@@ -17,7 +17,6 @@
          (method (request-method req))
          (app-prefix (script-name req))
          (uri    (strip-app-prefix (request-uri req) app-prefix)))
-    (log:info app-prefix (request-uri req) uri)
     (loop for route in (app-routing-rules app) do
       (multiple-value-bind (url params)
           (match (route-rule route) method uri)
