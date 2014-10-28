@@ -106,10 +106,10 @@ and returning the resulting mounted app."
 
 ;;; Application definition
 
-(defmacro defapp (name &key middlewares sub-apps)
+(defmacro defapp (name &key middlewares sub-apps (class ''<app>))
   "Define an application."
   `(defparameter ,name
-     (let (q(app (make-instance '<app>)))
+     (let ((app (make-instance ,class)))
        ;; Use the middlewares
        ,@(loop for mw in middlewares collecting
            (if (listp mw)

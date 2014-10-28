@@ -51,22 +51,19 @@
                  :method method))
 
 (annot:defannotation route (app config body) (:arity 3)
-  (let* ((view (second body)))
-    (if (atom config)
-        ;; The config is just a URL
-        `(progn
-           ,body
-           (lucerne.views:define-route ,app
-             ,config
-             :get
-             #',view))
-        ;; The config is a (<method> <url>) pair
-        `(progn
-           ,body
-           (lucerne.views:define-route ,app
-               ,(second config)
-             ,(first config)
-             #',view)))))
+  (if (atom config)
+      ;; The config is just a URL
+      `(progn
+         (lucerne.views:define-route ,app
+           ,config
+           :get
+           ,body))
+      ;; The config is a (<method> <url>) pair
+      `(progn
+         (lucerne.views:define-route ,app
+             ,(second config)
+           ,(first config)
+           ,body))))
 
 (defmacro defview (name (&rest args) &rest body)
   "Define a view. The body of the view implicitly has access to the request
