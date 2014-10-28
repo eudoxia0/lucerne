@@ -1,11 +1,15 @@
-(in-package :lucerne)
-(annot:enable-annot-syntax)
+(in-package :cl-user)
+(defpackage lucerne.ctl
+  (:use :cl :anaphora)
+  (:export :start
+           :stop))
+(in-package :lucerne.ctl)
 
 (defparameter *handlers*
   (make-hash-table)
   "Maps application names to their handlers.")
 
-(defun start (app &key (port 8000))
+(defmethod start ((app lucerne.app:<app>) &key (port 8000))
   "Bring up `app`, by default on `port` 8000. If the server was not running, it
 returns `t`. If the server was running, it restarts it and returns nil."
   (let ((rebooted nil))
@@ -16,14 +20,14 @@ returns `t`. If the server was running, it restarts it and returns nil."
       (clack:stop it))
     (let ((handler
             (clack:clackup
-             (lucerne::build-app app)
+             (lucerne.app:build-app app)
              :port port
              :server :hunchentoot)))
       (setf (gethash app *handlers*) handler)
       ;; If it was rebooted, return nil. Otherwise t.
       (not rebooted))))
 
-(defun stop (app)
+(defmethod stop ((app lucerne.app:<app>))
   "If `app` is running, stop it and return T. Otherwise, do nothing and
 return NIL."
   (awhen (gethash app *handlers*)

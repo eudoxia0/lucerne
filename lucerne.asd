@@ -1,8 +1,9 @@
 (asdf:defsystem lucerne
-  :version "0.1"
+  :version "0.2"
   :author "Fernando Borretti"
   :license "MIT"
   :depends-on (:clack
+               :myway
                :cl-annot
                :trivial-types
                :clack-errors
@@ -11,11 +12,10 @@
                :log4cl)
   :components ((:module "src"
                 :components
-                ((:file "package")
-                 (:file "app")
+                ((:file "app")
+                 (:file "http")
                  (:file "views")
-                 (:file "handlers")
-                 (:file "http"))))
+                 (:file "control"))))
   :description "A Clack-based microframework."
   :long-description
   #.(uiop:read-file-string
