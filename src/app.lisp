@@ -114,9 +114,9 @@ and returning the resulting mounted app."
        ,@(loop for mw in middlewares collecting
            (if (listp mw)
                ;; The middleware is a list, so we splice in a make-instance
-               `(use app (make-instance ,@mw))
+               `(use app (make-instance ',(first mw) ,@(rest mw)))
                ;; The middleware is just a class name with no arguments
-               `(use app (make-instance ,mw))))
+               `(use app (make-instance ',mw))))
        ;; Register the sub-applications
        ,@(loop for sub-app in sub-apps collecting
            `(register app ,(first sub-app) ,(second sub-app)))
