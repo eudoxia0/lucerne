@@ -15,7 +15,8 @@
                 ((:file "app")
                  (:file "http")
                  (:file "views")
-                 (:file "control"))))
+                 (:file "control")
+                 (:file "lucerne"))))
   :description "A Clack-based microframework."
   :long-description
   #.(uiop:read-file-string

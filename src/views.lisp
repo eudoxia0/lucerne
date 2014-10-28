@@ -5,12 +5,11 @@
                 :make-request
                 :request-method
                 :script-name
-                :request-uri
-                :parameter
-                :env)
+                :request-uri)
   (:export :not-found
            :define-route
            :defview
+           :req
            :route))
 (in-package :lucerne.views)
 
@@ -18,6 +17,28 @@
   "The basic `not-found` screen: Returns HTTP 404 and the text 'Not found'."
   (declare (ignore req))
   (lucerne.http:respond "Not found" :type "text/plain" :status 404))
+
+(defun strip-app-prefix (url app-prefix)
+  (if (> (length app-prefix) 0)
+      (subseq url (1- (length app-prefix)))
+      url))
+
+(defmethod clack:call ((app lucerne.app:<app>) env)
+  "Routes the request determined by `env` on the application `app`."
+  (let* ((req    (make-request env))
+         (method (request-method req))
+         (prefix (script-name req))
+         (uri    (request-uri req))
+         (final-uri (strip-app-prefix uri prefix))
+         ;; Now, we actually do the dispatching
+         (route (myway:dispatch (lucerne.app:routes app)
+                                final-uri
+                                :method method)))
+    (if route
+        ;; We have a hit
+        (funcall route req)
+        ;; Not found
+        (not-found app req))))
 
 (defmethod define-route ((app lucerne.app:<app>) url method fn)
   "Map `method` calls to `url` in `app` to the function `fn`."
@@ -29,20 +50,23 @@
                      (funcall fn params req)))
                  :method method))
 
-(defmethod clack:call ((app lucerne.app:<app>) env)
-  "Routes the request determined by `env` on the application `app`."
-  (let* ((req    (make-request env))
-         (method (request-method req))
-         (uri    (request-uri req))
-         ;; Now, we actually do the dispatching
-         (route (myway:dispatch (lucerne.app:routes app)
-                                uri
-                                :method method)))
-    (if route
-        ;; We have a hit
-        (funcall route req)
-        ;; Not found
-        (not-found app req))))
+(annot:defannotation route (app config body) (:arity 3)
+  (let* ((view (second body)))
+    (if (atom config)
+        ;; The config is just a URL
+        `(progn
+           ,body
+           (lucerne.views:define-route ,app
+             ,config
+             :get
+             #',view))
+        ;; The config is a (<method> <url>) pair
+        `(progn
+           ,body
+           (lucerne.views:define-route ,app
+               ,(second config)
+             ,(first config)
+             #',view)))))
 
 (defmacro defview (name (&rest args) &rest body)
   "Define a view. The body of the view implicitly has access to the request
@@ -56,21 +80,3 @@
                    args)
        (declare (ignore params))
        ,@body)))
-
-(annot:defannotation route (app config body) (:arity 3)
-  (let* ((view (second body)))
-    (if (atom config)
-        ;; The config is just a URL
-        `(progn
-           ,body
-           (lucerne.views:route ,app
-                                ,config
-                                :get
-                                #',view))
-        ;; The config is a (<method> <url>) pair
-        `(progn
-           ,body
-           (lucerne.views:route ,app
-                                ,(second config)
-                                ,(first config)
-                                #',view)))))

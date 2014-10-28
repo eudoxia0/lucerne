@@ -58,6 +58,7 @@
            :documentation "The application's routes.")
    (middlewares :accessor middlewares
                 :initarg :middlewares
+                :initform nil
                 :type list
                 :documentation "List of middlewares the application will run.")
    (sub-apps :accessor sub-apps
@@ -69,7 +70,7 @@
 
 (defmethod register ((app <app>) prefix (sub-app <app>))
   "Mount `sub-app` to `app` on the prefix `prefix`."
-  (push (make-instance '<mount-point>
+  (push (make-instance '<prefix-mount>
                        :prefix prefix
                        :app sub-app)
         (sub-apps app)))
@@ -108,15 +109,15 @@ and returning the resulting mounted app."
 (defmacro defapp (name &key middlewares sub-apps)
   "Define an application."
   `(defparameter ,name
-     (let ((app (make-instance '<app>)))
+     (let (q(app (make-instance '<app>)))
        ;; Use the middlewares
-       ,(loop for mw in middlewares collecting
-          (if (listp mw)
-              ;; The middleware is a list, so we splice in a make-instance
-              `(use app (make-instance ,@mw))
-              ;; The middleware is just a class name with no arguments
-              `(use app (make-instance ,mw))))
+       ,@(loop for mw in middlewares collecting
+           (if (listp mw)
+               ;; The middleware is a list, so we splice in a make-instance
+               `(use app (make-instance ,@mw))
+               ;; The middleware is just a class name with no arguments
+               `(use app (make-instance ,mw))))
        ;; Register the sub-applications
-       ,(loop for sub-app in sub-apps collecting
-          `(register app ,(first sub-app) ,(second sub-app)))
+       ,@(loop for sub-app in sub-apps collecting
+           `(register app ,(first sub-app) ,(second sub-app)))
        app)))
