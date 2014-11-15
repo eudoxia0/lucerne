@@ -34,6 +34,7 @@
            :routes
            :middlewares
            :sub-apps
+           :handler
            :register
            :use
            :build-app
@@ -65,7 +66,10 @@
              :initarg :sub-apps
              :initform nil
              :type (list-of <mount-point>)
-             :documentation "A list of sub-application mount points."))
+             :documentation "A list of sub-application mount points.")
+   (handler :accessor handler
+            :initform nil
+            :documentation "The server handler."))
   (:documentation "The base class for all Lucerne applications."))
 
 (defmethod register ((app <app>) prefix (sub-app <app>))

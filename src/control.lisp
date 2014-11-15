@@ -1,37 +1,37 @@
 (in-package :cl-user)
 (defpackage lucerne.ctl
   (:use :cl :anaphora)
+  (:import-from :lucerne.app
+                :<app>
+                :handler
+                :build-app)
   (:export :start
            :stop))
 (in-package :lucerne.ctl)
 
-(defparameter *handlers*
-  (make-hash-table)
-  "Maps application names to their handlers.")
-
-(defmethod start ((app lucerne.app:<app>) &key (port 8000))
+(defmethod start ((app <app>) &key (port 8000))
   "Bring up `app`, by default on `port` 8000. If the server was not running, it
 returns `t`. If the server was running, it restarts it and returns nil."
   (let ((rebooted nil))
-    (awhen (gethash app *handlers*)
+    (awhen (handler app)
       ;; The handler already exists, meaning the server is running. Bring it
       ;; down before bringing it up again.
       (setf rebooted t)
       (clack:stop it))
     (let ((handler
             (clack:clackup
-             (lucerne.app:build-app app)
+             (build-app app)
              :port port
              :server :hunchentoot)))
-      (setf (gethash app *handlers*) handler)
+      (setf (handler app) handler)
       ;; If it was rebooted, return nil. Otherwise t.
       (not rebooted))))
 
-(defmethod stop ((app lucerne.app:<app>))
+(defmethod stop ((app <app>))
   "If `app` is running, stop it and return T. Otherwise, do nothing and
 return NIL."
-  (awhen (gethash app *handlers*)
+  (awhen (handler app)
     ;; The handler exists, so the app is up and running. Stop it, and return t.
     (clack:stop it)
-    (remhash app *handlers*)
+    (setf (handler app) nil)
     t))
