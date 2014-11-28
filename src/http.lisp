@@ -1,5 +1,15 @@
-(in-package :lucerne)
-(annot:enable-annot-syntax)
+(in-package :cl-user)
+(defpackage lucerne.http
+  (:use :cl)
+  (:import-from :clack.request
+                :parameter
+                :env)
+  (:export :respond
+           :redirect
+           :session
+           :with-params
+           :render-template))
+(in-package :lucerne.http)
 
 (defun respond (body &key (type "text/html;charset=utf-8") (status 200))
   "Construct a response from a `body`, content `type` and `status` code."

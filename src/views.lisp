@@ -1,38 +1,69 @@
-(in-package :lucerne)
-(annot:enable-annot-syntax)
+(in-package :cl-user)
+(defpackage lucerne.views
+  (:use :cl :trivial-types :cl-annot :anaphora)
+  (:import-from :clack.request
+                :make-request
+                :request-method
+                :script-name
+                :request-uri)
+  (:export :not-found
+           :define-route
+           :defview
+           :req
+           :route))
+(in-package :lucerne.views)
 
-(defmethod not-found ((app <app>) req)
+(defmethod not-found ((app lucerne.app:<app>) req)
   "The basic `not-found` screen: Returns HTTP 404 and the text 'Not found'."
   (declare (ignore req))
-  (respond "Not found" :type "text/plain" :status 404))
+  (lucerne.http:respond "Not found" :type "text/plain" :status 404))
 
 (defun strip-app-prefix (url app-prefix)
   (if (> (length app-prefix) 0)
       (subseq url (1- (length app-prefix)))
       url))
 
-(defmethod clack:call ((app <app>) env)
+(defmethod clack:call ((app lucerne.app:<app>) env)
   "Routes the request determined by `env` on the application `app`."
   (let* ((req    (make-request env))
          (method (request-method req))
-         (app-prefix (script-name req))
-         (uri    (strip-app-prefix (request-uri req) app-prefix)))
-    (loop for route in (app-routing-rules app) do
-      (multiple-value-bind (url params)
-          (match (route-rule route) method uri)
-        (if url
-            (return-from clack:call (funcall (route-function route)
-                                             params
-                                             req)))))
-    (not-found app req)))
+         (prefix (script-name req))
+         (uri    (request-uri req))
+         (final-uri (strip-app-prefix uri prefix))
+         ;; Now, we actually do the dispatching
+         (route (myway:dispatch (lucerne.app:routes app)
+                                final-uri
+                                :method method)))
+    (if route
+        ;; We have a hit
+        (funcall route req)
+        ;; Not found
+        (not-found app req))))
 
-(defun add-route (app url method fn)
-  "Add the route that maps `url` and `method` to `fn` to the application `app`."
-  (push (make-instance '<route>
-                       :rule (make-url-rule url :method method)
-                       :method method
-                       :fn fn)
-        (app-routing-rules app)))
+(defmethod define-route ((app lucerne.app:<app>) url method fn)
+  "Map `method` calls to `url` in `app` to the function `fn`."
+  (myway:connect (lucerne.app:routes app)
+                 url
+                 (lambda (params)
+                   ;; Dispatching returns a function that closes over `params`
+                   (lambda (req)
+                     (funcall fn params req)))
+                 :method method))
+
+(annot:defannotation route (app config body) (:arity 3)
+  (if (atom config)
+      ;; The config is just a URL
+      `(progn
+         (lucerne.views:define-route ,app
+           ,config
+           :get
+           ,body))
+      ;; The config is a (<method> <url>) pair
+      `(progn
+         (lucerne.views:define-route ,app
+             ,(second config)
+           ,(first config)
+           ,body))))
 
 (defmacro defview (name (&rest args) &rest body)
   "Define a view. The body of the view implicitly has access to the request
@@ -44,22 +75,5 @@
                        `(,arg (getf params ,(intern (symbol-name arg)
                                                     :keyword))))
                    args)
+       (declare (ignore params))
        ,@body)))
-
-(annot:defannotation route (app config body) (:arity 3)
-  (let* ((view (second body)))
-    (if (atom config)
-        ;; The config is just a URL
-        `(progn
-           ,body
-           (lucerne:add-route ,app
-                              ,config
-                              :get
-                              #',view))
-        ;; The config is a (<method> <url>) pair
-        `(progn
-           ,body
-           (lucerne:add-route ,app
-                              ,(second config)
-                              ,(first config)
-                              #',view)))))
