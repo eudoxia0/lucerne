@@ -63,7 +63,7 @@ mounts them all together, and ensures all their middleware is applied."))
    (sub-apps :accessor sub-apps
              :initarg :sub-apps
              :initform nil
-             :type (list-of <mount-point>)
+             :type (proper-list <mount-point>)
              :documentation "A list of sub-application mount points.")
    (running-port :accessor running-port
                  :initform nil
