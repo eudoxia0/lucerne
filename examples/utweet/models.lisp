@@ -17,7 +17,7 @@
            :date
            :text
            ;; Utility functions
-           :register
+           :register-user
            :followers
            :following
            :follower-summary
@@ -79,7 +79,7 @@
 
 ;;; Some utility functions
 
-(defun register (username full-name email password)
+(defun register-user (username full-name email password)
   "Register the user. Passwords are hashed."
   (create '<user> :username username
                   :full-name full-name
@@ -133,9 +133,9 @@
 
 ;;; Create some example data
 
-(let ((eudox (register "eudoxia" "eudoxia" "black.linen99@gmail.com" "pass"))
-      (john  (register "john" "John Doe" "jdoe@initech.com" "test"))
-      (jane  (register "jane" "Jane Doe" "jane.doe@initech.com" "test")))
+(let ((eudox (register-user "eudoxia" "eudoxia" "black.linen99@gmail.com" "pass"))
+      (john  (register-user "john" "John Doe" "jdoe@initech.com" "test"))
+      (jane  (register-user "jane" "Jane Doe" "jane.doe@initech.com" "test")))
   ;; Make eudoxia follow both
   (follow eudox john)
   (follow eudox jane)
