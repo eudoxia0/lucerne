@@ -7,9 +7,9 @@
                 :register
                 :use)
   (:import-from :lucerne.views
+                :*request*
                 :not-found
                 :defview
-                :req
                 :route)
   (:export :<app>
            :defapp
@@ -22,7 +22,7 @@
            :render-template
            :not-found
            :defview
-           :req
+           :*request*
            :route
            :start
            :stop))

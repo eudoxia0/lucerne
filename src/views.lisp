@@ -6,16 +6,19 @@
                 :request-method
                 :script-name
                 :request-uri)
-  (:export :not-found
+  (:export :*request*
+           :not-found
            :define-route
            :defview
-           :req
            :route))
 (in-package :lucerne.views)
 
-(defmethod not-found ((app lucerne.app:<app>) req)
+(defvar *request* nil
+  "The current request. This will be bound in the body of a view through a
+lexical let.")
+
+(defmethod not-found ((app lucerne.app:<app>))
   "The basic `not-found` screen: Returns HTTP 404 and the text 'Not found'."
-  (declare (ignore req))
   (lucerne.http:respond "Not found" :type "text/plain" :status 404))
 
 (defun strip-app-prefix (url app-prefix)
@@ -38,7 +41,8 @@
         ;; We have a hit
         (funcall route req)
         ;; Not found
-        (not-found app req))))
+        (let ((*request* req))
+          (not-found app)))))
 
 (defmethod define-route ((app lucerne.app:<app>) url method fn)
   "Map `method` calls to `url` in `app` to the function `fn`."
@@ -47,7 +51,8 @@
                  (lambda (params)
                    ;; Dispatching returns a function that closes over `params`
                    (lambda (req)
-                     (funcall fn params req)))
+                     (let ((*request* req))
+                       (funcall fn params))))
                  :method method))
 
 (annot:defannotation route (app config body) (:arity 3)
@@ -68,7 +73,7 @@
 (defmacro defview (name (&rest args) &rest body)
   "Define a view. The body of the view implicitly has access to the request
   object under the name `req`."
-  `(defun ,(intern (symbol-name name)) (params req)
+  `(defun ,(intern (symbol-name name)) (params)
      ;; Here, we extract arguments from the params plist into the arguments
      ;; defined in the argument list
      (let ,(mapcar #'(lambda (arg)

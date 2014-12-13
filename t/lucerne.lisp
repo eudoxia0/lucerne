@@ -42,7 +42,7 @@
   (finishes
     @route app (:post "/post")
     (defview post-test ()
-      (with-params req (a b)
+      (with-params *request* (a b)
         (respond (format nil "~A ~A" a b))))))
 
 (test (bring-up :depends-on define-routes)
