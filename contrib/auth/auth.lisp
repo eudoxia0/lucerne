@@ -1,7 +1,7 @@
 (in-package :cl-user)
 (defpackage lucerne-auth
   (:use :cl)
-  (:import-from :lucerne
+  (:import-from :clack.request
                 :env)
   (:export :<auth-manager>
            :get-userid
@@ -19,7 +19,7 @@
               :type     function)))
 
 (defun get-session (req)
-  (getf (env req) :clack.session))
+  (getf (request-env req) :clack.session))
 
 (defun get-userid (req)
   (gethash :userid (get-session req)))
