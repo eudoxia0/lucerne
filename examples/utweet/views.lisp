@@ -12,10 +12,11 @@
 ;;; App definition
 
 (defapp app
-    :middlewares ((clack.middleware.static:<clack-middleware-static>
-                   :path "/static/"
-                   :root (asdf:system-relative-pathname :lucerne-utweet
-                                                        #p"examples/utweet/static/"))))
+  :middlewares (clack.middleware.session:<clack-middleware-session>
+                (clack.middleware.static:<clack-middleware-static>
+                 :path "/static/"
+                 :root (asdf:system-relative-pathname :lucerne-utweet
+                                                      #p"examples/utweet/static/"))))
 
 ;;; Views
 

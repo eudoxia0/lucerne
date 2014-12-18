@@ -18,14 +18,11 @@
               :reader   user-pass
               :type     function)))
 
-(defun get-session (req)
-  (getf (request-env req) :clack.session))
-
 (defun get-userid (req)
-  (gethash :userid (get-session req)))
+  (gethash :userid (lucerne:session req)))
 
 (defun login (req userid)
-  (setf (gethash :userid (get-session req))
+  (setf (gethash :userid (lucerne:session req))
         userid))
 
 (defun logout (req)
