@@ -45,7 +45,7 @@
       (with-params *request* (a b)
         (respond (format nil "~A ~A" a b))))))
 
-(test (bring-up :depends-on define-routes)
+(test bring-up
   (is-true
    ;; Starting the server for the first time
    (start app :port +port+))
@@ -53,7 +53,7 @@
    ;; Restarting the server
    (start app :port +port+)))
 
-(test (views-work :depends-on bring-up)
+(test views-work
   (is
    (equal "<h1>Welcome to Lucerne</h1>"
           (drakma:http-request (make-url ""))))
@@ -81,7 +81,7 @@
    (equal "Not found"
           (drakma:http-request (make-url "no-such-view")))))
 
-(test (bring-down :depends-on bring-up)
+(test bring-down
   (is-true
    ;; Stop the app
    (stop app))

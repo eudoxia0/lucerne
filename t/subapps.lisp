@@ -45,7 +45,7 @@
   (is-true
    (start parent-app :port +port+)))
 
-(test (sub-apps-work :depends-on bring-up-subapps)
+(test sub-apps-work
   (is
    (equal "main app"
           (drakma:http-request (make-url ""))))
@@ -56,7 +56,7 @@
    (equal "sub app 2"
           (drakma:http-request (make-url "s2/")))))
 
-(test (bring-down-subapps :depends-on bring-up-subapps)
+(test bring-down-subapps
   (is-true
    (stop parent-app)))
 
