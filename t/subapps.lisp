@@ -54,10 +54,7 @@
           (drakma:http-request (make-url "s1/"))))
   (is
    (equal "sub app 2"
-          (drakma:http-request (make-url "s2/"))))
-  (is
-   (equal "sub sub app"
-          (drakma:http-request (make-url "s1/s/")))))
+          (drakma:http-request (make-url "s2/")))))
 
 (test (bring-down-subapps :depends-on bring-up-subapps)
   (is-true
