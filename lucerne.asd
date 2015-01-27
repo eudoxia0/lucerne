@@ -1,8 +1,11 @@
 (asdf:defsystem lucerne
-  :version "0.2"
-  :author "Fernando Borretti"
+  :author "Fernando Borretti <eudoxiahp@gmail.com>"
+  :maintainer "Fernando Borretti <eudoxiahp@gmail.com>"
   :license "MIT"
+  :version "0.2"
   :homepage "https://github.com/eudoxia0/lucerne"
+  :bug-tracker "https://github.com/eudoxia0/lucerne/issues"
+  :source-control (:git "git@github.com:eudoxia0/lucerne.git")
   :depends-on (:clack
                :myway
                :cl-annot
