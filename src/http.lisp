@@ -31,12 +31,14 @@ by default)."
 (defmacro with-params (req params &rest body)
   "Extract the parameters in `param` from the request `req`, and bind them for
 use in `body`."
-  `(let ,(mapcar #'(lambda (param)
-                     `(,param (parameter ,req
-                                         ,(intern (string-downcase
-                                                   (symbol-name param))
-                                                  :keyword))))
-                 params)
+  `(let ,(loop for param in params collecting
+               `(,param (let ((str (parameter ,req
+                                              ,(intern (string-downcase
+                                                        (symbol-name param))
+                                                       :keyword))))
+                          (if (equal str "")
+                              nil
+                              str))))
      ,@body))
 
 (defmacro render-template (template-name &rest args)
