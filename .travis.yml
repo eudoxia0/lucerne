@@ -18,7 +18,7 @@ script:
                  (lambda (c h)
                    (declare (ignore c h))
                    (uiop:quit -1)))'
-       -e '(coveralls:with-coveralls (:exclude (list "examples"))
+       -e '(coveralls:with-coveralls (:exclude (list "examples" "t"))
              (ql:quickload :lucerne-test))'
 
 notifications:
