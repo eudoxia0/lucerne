@@ -93,13 +93,15 @@ mounts them all together, and ensures all their middleware is applied."))
 (defun apply-mounts (app)
   "Recursively go through an app, mounting sub-applications to their prefix URLs
 and returning the resulting mounted app."
-  (let ((resulting-app (make-instance 'clack.app.urlmap:<clack-app-urlmap>)))
-    (clack.app.urlmap:mount resulting-app "/" app)
-    (loop for mount-point in (sub-apps app) do
-      (clack.app.urlmap:mount resulting-app
-                              (prefix mount-point)
-                              (build-app (app mount-point))))
-    resulting-app))
+  (if (sub-apps app)
+      (let ((resulting-app (make-instance 'clack.app.urlmap:<clack-app-urlmap>)))
+        (clack.app.urlmap:mount resulting-app "/" app)
+        (loop for mount-point in (sub-apps app) do
+          (clack.app.urlmap:mount resulting-app
+                                  (prefix mount-point)
+                                  (build-app (app mount-point))))
+        resulting-app)
+      app))
 
 (defmethod build-app ((app <app>))
   "Take a Lucerne application, and recursively mount sub-applications and apply
