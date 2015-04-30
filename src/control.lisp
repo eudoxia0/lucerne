@@ -32,9 +32,10 @@ returns `t`. If the server was running, it restarts it and returns nil."
       (clack:stop it))
     (let ((handler
             (clack:clackup
-             (build-app app)
+             (lack:builder (build-app app))
              :port port
-             :server :hunchentoot)))
+             :server :hunchentoot
+             :use-default-middlewares nil)))
       (setf (running-port app) port)
       (setf (gethash port *handlers*) handler)
       ;; If it was rebooted, return nil. Otherwise t.
