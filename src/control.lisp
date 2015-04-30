@@ -1,6 +1,9 @@
 (in-package :cl-user)
 (defpackage lucerne.ctl
-  (:use :cl :anaphora)
+  (:use :cl)
+  (:import-from :anaphora
+                :awhen
+                :it)
   (:import-from :lucerne.app
                 :<app>
                 :running-port
