@@ -7,6 +7,7 @@
   :bug-tracker "https://github.com/eudoxia0/lucerne/issues"
   :source-control (:git "git@github.com:eudoxia0/lucerne.git")
   :depends-on (:clack
+               :clack-v1-compat
                :myway
                :cl-annot
                :trivial-types
