@@ -4,6 +4,7 @@
   :depends-on (:lucerne
                :fiveam
                :drakma)
+  :description "Lucerne tests"
   :components ((:module "t"
                 :serial t
                 :components
