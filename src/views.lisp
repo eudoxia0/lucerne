@@ -6,16 +6,11 @@
                 :request-method
                 :script-name
                 :request-uri)
-  (:export :*request*
-           :not-found
+  (:export :not-found
            :define-route
            :defview
            :route))
 (in-package :lucerne.views)
-
-(defvar *request* nil
-  "The current request. This will be bound in the body of a view through a
-lexical let.")
 
 (defmethod not-found ((app lucerne.app:<app>))
   "The basic `not-found` screen: Returns HTTP 404 and the text 'Not found'."
@@ -41,7 +36,7 @@ lexical let.")
         ;; We have a hit
         (funcall route req)
         ;; Not found
-        (let ((*request* req))
+        (let ((lucerne.http:*request* req))
           (not-found app)))))
 
 (defmethod define-route ((app lucerne.app:<app>) url method fn)
@@ -51,7 +46,7 @@ lexical let.")
                  (lambda (params)
                    ;; Dispatching returns a function that closes over `params`
                    (lambda (req)
-                     (let ((*request* req))
+                     (let ((lucerne.http:*request* req))
                        (funcall fn params))))
                  :method method))
 

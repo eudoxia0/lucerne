@@ -4,12 +4,17 @@
   (:import-from :clack.request
                 :parameter
                 :env)
-  (:export :respond
+  (:export :*request*
+           :respond
            :redirect
            :session
            :with-params
            :render-template))
 (in-package :lucerne.http)
+
+(defvar *request* nil
+  "The current request. This will be bound in the body of a view through a
+lexical let.")
 
 (defun respond (body &key (type "text/html;charset=utf-8") (status 200))
   "Construct a response from a `body`, content `type` and `status` code."
@@ -32,7 +37,7 @@ by default)."
   "Extract the parameters in `param` from the *request*, and bind them for use
 in `body`."
   `(let ,(loop for param in params collecting
-               `(,param (let ((str (parameter lucerne.views:*request*
+               `(,param (let ((str (parameter *request*
                                               ,(intern (string-downcase
                                                         (symbol-name param))
                                                        :keyword))))

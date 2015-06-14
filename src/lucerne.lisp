@@ -7,7 +7,6 @@
                 :register
                 :use)
   (:import-from :lucerne.views
-                :*request*
                 :not-found
                 :defview
                 :route)
@@ -15,6 +14,7 @@
            :defapp
            :register
            :use
+           :*request*
            :respond
            :redirect
            :session
