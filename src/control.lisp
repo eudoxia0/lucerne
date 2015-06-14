@@ -21,7 +21,7 @@ leak ports and prevent 'address in use' errors."))
   (make-hash-table)
   "A map of ports to server handlers.")
 
-(defmethod start ((app <app>) &key (port 8000))
+(defmethod start ((app <app>) &key (port 8000) (server :hunchentoot))
   "Bring up `app`, by default on `port` 8000. If the server was not running, it
 returns `t`. If the server was running, it restarts it and returns nil."
   (let ((rebooted nil))
@@ -34,7 +34,7 @@ returns `t`. If the server was running, it restarts it and returns nil."
             (clack:clackup
              (lack:builder (build-app app))
              :port port
-             :server :hunchentoot
+             :server server
              :use-default-middlewares nil)))
       (setf (running-port app) port)
       (setf (gethash port *handlers*) handler)
