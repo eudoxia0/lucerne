@@ -12,7 +12,7 @@
            :route))
 (in-package :lucerne.views)
 
-(defmethod not-found ((app lucerne.app:<app>))
+(defmethod not-found ((app lucerne.app:app))
   "The basic `not-found` screen: Returns HTTP 404 and the text 'Not found'."
   (lucerne.http:respond "Not found" :type "text/plain" :status 404))
 
@@ -21,7 +21,7 @@
       (subseq url (1- (length app-prefix)))
       url))
 
-(defmethod clack:call ((app lucerne.app:<app>) env)
+(defmethod clack:call ((app lucerne.app:app) env)
   "Routes the request determined by `env` on the application `app`."
   (let* ((req    (make-request env))
          (method (request-method req))
@@ -39,7 +39,7 @@
         (let ((lucerne.http:*request* req))
           (not-found app)))))
 
-(defmethod define-route ((app lucerne.app:<app>) url method fn)
+(defmethod define-route ((app lucerne.app:app) url method fn)
   "Map `method` calls to `url` in `app` to the function `fn`."
   (myway:connect (lucerne.app:routes app)
                  url

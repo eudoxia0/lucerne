@@ -5,7 +5,7 @@
                 :awhen
                 :it)
   (:import-from :lucerne.app
-                :<app>
+                :app
                 :running-port
                 :build-app)
   (:export :start
@@ -21,7 +21,7 @@ leak ports and prevent 'address in use' errors."))
   (make-hash-table)
   "A map of ports to server handlers.")
 
-(defmethod start ((app <app>) &key (port 8000) (server :hunchentoot))
+(defmethod start ((app app) &key (port 8000) (server :hunchentoot))
   "Bring up `app`, by default on `port` 8000. If the server was not running, it
 returns `t`. If the server was running, it restarts it and returns nil."
   (let ((rebooted nil))
@@ -41,7 +41,7 @@ returns `t`. If the server was running, it restarts it and returns nil."
       ;; If it was rebooted, return nil. Otherwise t.
       (not rebooted))))
 
-(defmethod stop ((app <app>))
+(defmethod stop ((app app))
   "If `app` is running, stop it and return T. Otherwise, do nothing and
 return NIL."
   (awhen (gethash (running-port app) *handlers*)

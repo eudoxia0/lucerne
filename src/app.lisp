@@ -47,10 +47,10 @@ mounts them all together, and ensures all their middleware is applied."))
            :type string)
    (app :reader app
         :initarg :app
-        :type <app>))
+        :type app))
   (:documentation "Maps a prefix to a sub-application."))
 
-(defclass <app> (clack:<component>)
+(defclass app (clack:<component>)
   ((routes :accessor routes
            :initform (myway:make-mapper)
            :type myway.mapper:mapper
@@ -70,14 +70,14 @@ mounts them all together, and ensures all their middleware is applied."))
                  :documentation "The port the server is currently running on, if any."))
   (:documentation "The base class for all Lucerne applications."))
 
-(defmethod register ((app <app>) prefix (sub-app <app>))
+(defmethod register ((app app) prefix (sub-app app))
   "Mount `sub-app` to `app` on the prefix `prefix`."
   (push (make-instance 'prefix-mount
                        :prefix prefix
                        :app sub-app)
         (sub-apps app)))
 
-(defmethod use ((app <app>) middleware)
+(defmethod use ((app app) middleware)
   "Make `app` use the middleware instance `middleware`."
   (push middleware (middlewares app)))
 
@@ -103,14 +103,14 @@ and returning the resulting mounted app."
         resulting-app)
       app))
 
-(defmethod build-app ((app <app>))
+(defmethod build-app ((app app))
   "Take a Lucerne application, and recursively mount sub-applications and apply
   middleware."
   (apply-middlewares-list (apply-mounts app) (middlewares app)))
 
 ;;; Application definition
 
-(defmacro defapp (name &key middlewares sub-apps (class ''<app>))
+(defmacro defapp (name &key middlewares sub-apps (class ''app))
   "Define an application."
   `(defparameter ,name
      (let ((app (make-instance ,class)))
