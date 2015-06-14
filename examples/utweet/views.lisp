@@ -60,7 +60,7 @@
 
 @route app (:post "/signup")
 (defview sign-up ()
-  (with-params *request* (name username email password password-repeat)
+  (with-params (name username email password password-repeat)
     (if (exists '<user> :username :username)
         ;; Does a user with that name exist? In that case, render the landing
         ;; template with a corresponding error
@@ -77,7 +77,7 @@
 
 @route app (:post "/signin")
 (defview sign-in ()
-  (with-params *request* (username password)
+  (with-params (username password)
     ;; Check whether a user with this name exists
     (let ((user (single '<user> :username username)))
       (if user
