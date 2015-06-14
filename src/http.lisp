@@ -28,11 +28,11 @@ by default)."
   "Extract the session hash table from a request.x"
   `(getf (env ,req) :clack.session))
 
-(defmacro with-params (req params &rest body)
-  "Extract the parameters in `param` from the request `req`, and bind them for
-use in `body`."
+(defmacro with-params (params &rest body)
+  "Extract the parameters in `param` from the *request*, and bind them for use
+in `body`."
   `(let ,(loop for param in params collecting
-               `(,param (let ((str (parameter ,req
+               `(,param (let ((str (parameter lucerne.views:*request*
                                               ,(intern (string-downcase
                                                         (symbol-name param))
                                                        :keyword))))
