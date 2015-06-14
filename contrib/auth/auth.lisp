@@ -3,14 +3,13 @@
   (:use :cl)
   (:import-from :clack.request
                 :env)
-  (:export :<auth-manager>
-           :get-userid
+  (:export :get-userid
            :login
            :logout
            :logged-in-p))
 (in-package :lucerne-auth)
 
-(defclass <auth-manager> ()
+(defclass auth-manager ()
   ((get-user :initarg :get-user
              :reader  get-user
              :type    function)
@@ -18,15 +17,15 @@
               :reader   user-pass
               :type     function)))
 
-(defun get-userid (req)
-  (gethash :userid (lucerne:session req)))
+(defun get-userid ()
+  (gethash :userid (lucerne:session lucerne:*request*)))
 
-(defun login (req userid)
-  (setf (gethash :userid (lucerne:session req))
+(defun login (userid)
+  (setf (gethash :userid (lucerne:session lucerne:*request*))
         userid))
 
-(defun logout (req)
-  (remhash :userid (get-session req)))
+(defun logout ()
+  (remhash :userid (get-session lucerne:*request*)))
 
-(defun logged-in-p (req)
-  (if (get-userid req) t))
+(defun logged-in-p ()
+  (if (get-userid lucerne:*request*) t))
