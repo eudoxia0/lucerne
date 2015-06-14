@@ -1,7 +1,7 @@
 1(in-package :cl-user)
 (defpackage lucerne.app
   (:use :cl :trivial-types :cl-annot :anaphora)
-  (:export :<prefix-mount>
+  (:export :prefix-mount
            :prefix
            :app
            :<app>
@@ -39,9 +39,9 @@ recursively tranverses the tree of nested applications and sub-applications,
 mounts them all together, and ensures all their middleware is applied."))
 (in-package :lucerne.app)
 
-(defclass <mount-point> () ())
+(defclass mount-point () ())
 
-(defclass <prefix-mount> ()
+(defclass prefix-mount ()
   ((prefix :reader prefix
            :initarg :prefix
            :type string)
@@ -63,7 +63,7 @@ mounts them all together, and ensures all their middleware is applied."))
    (sub-apps :accessor sub-apps
              :initarg :sub-apps
              :initform nil
-             :type (proper-list <mount-point>)
+             :type (proper-list mount-point)
              :documentation "A list of sub-application mount points.")
    (running-port :accessor running-port
                  :initform nil
@@ -72,7 +72,7 @@ mounts them all together, and ensures all their middleware is applied."))
 
 (defmethod register ((app <app>) prefix (sub-app <app>))
   "Mount `sub-app` to `app` on the prefix `prefix`."
-  (push (make-instance '<prefix-mount>
+  (push (make-instance 'prefix-mount
                        :prefix prefix
                        :app sub-app)
         (sub-apps app)))
