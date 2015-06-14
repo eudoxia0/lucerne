@@ -12,7 +12,7 @@
                :cl-annot
                :trivial-types
                :clack-errors
-               :eco
+               :djula
                :anaphora
                :log4cl)
   :components ((:module "src"

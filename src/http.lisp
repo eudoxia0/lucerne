@@ -46,6 +46,8 @@ in `body`."
                               str))))
      ,@body))
 
-(defmacro render-template (template-name &rest args)
-  "Render an Eco template `template-name` passing arguments `args`."
-  `(respond (,template-name ,@args)))
+(defmacro render-template (template &rest args)
+  "Render a Djula template `template-name` passing arguments `args`."
+  `(djula:render-template* ,template
+                           nil
+                           ,@args))
