@@ -2,7 +2,7 @@
 (defpackage lucerne
   (:use :cl :lucerne.http :lucerne.ctl)
   (:import-from :lucerne.app
-                :app
+                :base-app
                 :defapp
                 :register
                 :use)
@@ -10,7 +10,7 @@
                 :not-found
                 :defview
                 :route)
-  (:export :app
+  (:export :base-app
            :defapp
            :register
            :use
