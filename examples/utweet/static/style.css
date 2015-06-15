@@ -34,6 +34,10 @@ body, html {
     background-image: -ms-linear-gradient(right top, #787FD5 0%, #9EDDFF 100%);
     background-image: -o-linear-gradient(right top, #787FD5 0%, #9EDDFF 100%);
     background-image: linear-gradient(to right top, #787FD5 0%, #9EDDFF 100%);
+
+    width: 100%;
+    min-height: 100%;
+    overflow: auto;
 }
 
 #welcome-panel .panel-heading {
