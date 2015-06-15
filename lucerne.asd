@@ -14,7 +14,8 @@
                :clack-errors
                :djula
                :anaphora
-               :log4cl)
+               :log4cl
+               :alexandria)
   :components ((:module "src"
                 :components
                 ((:file "app")
