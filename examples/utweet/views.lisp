@@ -23,13 +23,15 @@
 
 (defparameter +index+ (djula:compile-template* "index.html"))
 
-;;; Views
+;;; Utilities
 
 (defun find-user ()
   "Find the user from request data."
-  (let ((email (lucerne-auth:get-userid)))
+  (let ((username (lucerne-auth:get-userid)))
     (when username
-      (utweet.models:find-user email))))
+      (utweet.models:find-user username))))
+
+;;; Views
 
 @route app "/"
 (defview index ()
@@ -41,18 +43,21 @@
                          :timeline (utweet.models:user-timeline user)))
       (render-template +index+)))
 
-#|
+
 @route app "/profile/:username"
 (defview profile (username)
-  (let* ((user (single '<user> :username username))
-         (avatar-url (avatar-url user))
+  (let* ((user (utweet.models:find-user username))
          ;; The user's timeline
          (user-tweets (user-tweets user))
          ;; Is the user viewing his own profile?
-         (is-self (equal (get-userid *request*) username)))
-    (render-template eco-template:profile (get-userid *request*) user
-                     avatar-url user-tweets is-self)))
+         (is-self (string= (lucerne-auth.get-userid)
+                           username)))
+    (render-template +profile+
+                     :user user
+                     :user-tweets user-tweets
+                     :is-self is-self)))
 
+#|
 @route app "/followers/:username"
 (defview user-followers (username)
   (let ((user (single '<user> :username username)))

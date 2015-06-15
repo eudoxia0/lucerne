@@ -10,11 +10,11 @@
       <div class="col-md-10">
         <span class="name">{{ user.name }}</span>
         {% if is-self %}
-          <a href="/followers/<%= (utweet.models:username user) %>"
+          <a href="/followers/{{ user.username }}">
              role="button" class="btn btn-primary">
             Followers
           </a>
-          <a href="/following/<%= (utweet.models:username user) %>"
+          <a href="/following/{{ user.username }}"
              role="button" class="btn btn-primary">
             Following
           </a>
@@ -25,7 +25,7 @@
     </div>
     <div class="panel-body">
       {% if user-tweest %}
-        ;; Show tweets
+        {% include "show-tweets.html" %}
       {% else %}
         <div class="alert alert-info" role="alert">
           This user hasn't tweeted anything.
