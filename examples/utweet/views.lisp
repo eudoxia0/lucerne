@@ -20,8 +20,9 @@
 
 ;;; Views
 
-(defun get-user (req)
-  (let ((username (get-userid req)))
+(defun find-user ()
+  "Find the user in a request."
+  (let ((username (get-userid)))
     (when username
       (single '<user> :username username))))
 

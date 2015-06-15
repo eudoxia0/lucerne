@@ -1,7 +1,18 @@
 (in-package :cl-user)
 (defpackage utweet.models
   (:use :cl)
-  ;; Functions
+  (:export :user
+           :user-name
+           :user-email
+           :user-password
+           :user-avatar-url)
+  (:export :subscription
+           :subscription-follower
+           :subscription-followed)
+  (:export :tweet
+           :tweet-author
+           :tweet-text
+           :tweet-timestamp)
   (:export :register-user
            :followers
            :following
