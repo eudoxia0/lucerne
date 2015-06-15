@@ -14,7 +14,7 @@ error -- This is particularly common in testing. By using this system, we don't
 leak ports and prevent 'address in use' errors."))
 (in-package :lucerne.ctl)
 
-(defmethod start ((app base-app) &key (port 8000) (server :hunchentoot))
+(defmethod start ((app base-app) &key (port 8000) (server :hunchentoot) debug)
   "Bring up `app`, by default on `port` 8000. If the server was not running, it
 returns `t`. If the server was running, it restarts it and returns nil."
   (let ((rebooted nil))
@@ -25,7 +25,12 @@ returns `t`. If the server was running, it restarts it and returns nil."
       (clack:stop (handler app)))
     (setf (handler app)
           (clack:clackup
-           (lack:builder (build-app app))
+           (lack:builder (let ((clack-app (build-app app)))
+                           (if debug
+                               (funcall clack-errors:*clack-error-middleware*
+                                        clack-app
+                                        :debug t)
+                               clack-app)))
            :port port
            :server server
            :use-default-middlewares nil))
