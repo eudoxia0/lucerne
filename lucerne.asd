@@ -13,7 +13,6 @@
                :trivial-types
                :clack-errors
                :djula
-               :anaphora
                :log4cl
                :alexandria)
   :components ((:module "src"

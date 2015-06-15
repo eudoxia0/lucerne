@@ -1,6 +1,6 @@
 (in-package :cl-user)
 (defpackage lucerne.app
-  (:use :cl :trivial-types :cl-annot :anaphora)
+  (:use :cl :trivial-types :cl-annot)
   (:export :prefix-mount
            :prefix
            :base-app

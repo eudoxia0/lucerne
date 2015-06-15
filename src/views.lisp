@@ -1,6 +1,6 @@
 (in-package :cl-user)
 (defpackage lucerne.views
-  (:use :cl :trivial-types :cl-annot :anaphora)
+  (:use :cl :trivial-types :cl-annot)
   (:import-from :clack.request
                 :make-request
                 :request-method
