@@ -1,11 +1,7 @@
 (in-package :cl-user)
 (defpackage utweet.views
-  (:use :cl :lucerne :crane :utweet.models)
-  (:import-from :lucerne-auth
-                :get-userid
-                :login
-                :logout
-                :logged-in-p))
+  (:use :cl :lucerne)
+  (:export :app))
 (in-package :utweet.views)
 (annot:enable-annot-syntax)
 
@@ -18,22 +14,34 @@
                  :root (asdf:system-relative-pathname :lucerne-utweet
                                                       #p"examples/utweet/static/"))))
 
+;;; Templates
+
+(djula:add-template-directory
+ (asdf:system-relative-pathname :lucerne-utweet #p"examples/utweet/templates/"))
+
+(defparameter +timeline+ (djula:compile-template* "timeline.html"))
+
+(defparameter +index+ (djula:compile-template* "index.html"))
+
 ;;; Views
 
 (defun find-user ()
-  "Find the user in a request."
-  (let ((username (get-userid)))
+  "Find the user from request data."
+  (let ((email (lucerne-auth:get-userid)))
     (when username
-      (single '<user> :username username))))
+      (utweet.models:find-user email))))
 
 @route app "/"
 (defview index ()
-  (if (logged-in-p *request*)
-      (render-template eco-template:timeline
-                       (get-user *request*)
-                       (user-timeline (get-user *request*)))
-      (render-template eco-template:index)))
+  (if (lucerne-auth:logged-in-p)
+      ;; Serve the user-s timeline
+      (let ((user (find-user)))
+        (render-template +timeline+
+                         :name (utweet.models:user-name user)
+                         :timeline (utweet.models:user-timeline user)))
+      (render-template +index+)))
 
+#|
 @route app "/profile/:username"
 (defview profile (username)
   (let* ((user (single '<user> :username username))
@@ -101,3 +109,4 @@
 ;;; Bring it up
 
 (start app)
+|#

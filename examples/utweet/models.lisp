@@ -13,7 +13,8 @@
            :tweet-author
            :tweet-text
            :tweet-timestamp)
-  (:export :register-user
+  (:export :find-user
+           :register-user
            :followers
            :following
            :tweet
