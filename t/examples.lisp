@@ -12,4 +12,4 @@
   (finishes
     (lucerne:stop lucerne-hello-world:app)))
 
-(run! 'examples)
+;(run! 'examples)
