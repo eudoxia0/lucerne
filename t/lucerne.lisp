@@ -91,4 +91,21 @@
    ;; Try to stop it again, should do nothing and return NIL
    (stop app)))
 
+(defapp error-app)
+
+@route error-app "/"
+(defun error-view ()
+  (error "test"))
+
+(test clack-errors
+  (is-true
+   (start error-app :port +port+ :debug t))
+  (multiple-value-bind (body status &rest others)
+      (drakma:http-request (make-url ""))
+    (declare (ignore body others))
+    (is
+     (equal status 500)))
+  (is-true
+   (stop error-app)))
+
 (run! 'basic)
