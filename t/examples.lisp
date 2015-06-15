@@ -51,7 +51,6 @@
     ;; Bring up the app
     (lucerne:start utweet.views:app :port +port+)
     ;; Bring it down
-    ;(lucerne:stop utweet.views:app)
-    ))
+    (lucerne:stop utweet.views:app)))
 
 (run! 'examples)
