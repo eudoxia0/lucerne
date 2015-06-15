@@ -29,9 +29,9 @@ by default)."
         (list :location url)
         (list "")))
 
-(defmacro session (req)
-  "Extract the session hash table from a request.x"
-  `(getf (env ,req) :clack.session))
+(defmacro session ()
+  "Extract the session hash table from the request object."
+  `(getf (env *request*) :clack.session))
 
 (defmacro with-params (params &rest body)
   "Extract the parameters in `param` from the *request*, and bind them for use
@@ -46,8 +46,8 @@ in `body`."
                               str))))
      ,@body))
 
-(defmacro render-template (template &rest args)
+(defmacro render-template ((template) &rest args)
   "Render a Djula template `template-name` passing arguments `args`."
-  `(djula:render-template* ,template
-                           nil
-                           ,@args))
+  `(respond (djula:render-template* ,template
+                                    nil
+                                    ,@args)))
