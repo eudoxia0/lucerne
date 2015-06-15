@@ -5,12 +5,12 @@
   <div class="panel panel-default">
     <div class="panel-heading user-brief">
       <div class="col-md-2">
-        <img src="<%= avatar-url %>">
+        <img src="{{ user.avatar-url }}">
       </div>
       <div class="col-md-10">
         <span class="name">{{ user.name }}</span>
         {% if is-self %}
-          <a href="/followers/{{ user.username }}">
+          <a href="/followers/{{ user.username }}"
              role="button" class="btn btn-primary">
             Followers
           </a>
