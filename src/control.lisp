@@ -1,12 +1,9 @@
 (in-package :cl-user)
 (defpackage lucerne.ctl
   (:use :cl)
-  (:import-from :anaphora
-                :awhen
-                :it)
   (:import-from :lucerne.app
-                :app
-                :running-port
+                :base-app
+                :handler
                 :build-app)
   (:export :start
            :stop)
@@ -17,35 +14,34 @@ error -- This is particularly common in testing. By using this system, we don't
 leak ports and prevent 'address in use' errors."))
 (in-package :lucerne.ctl)
 
-(defparameter *handlers*
-  (make-hash-table)
-  "A map of ports to server handlers.")
-
-(defmethod start ((app app) &key (port 8000) (server :hunchentoot))
+(defmethod start ((app base-app) &key (port 8000) (server :hunchentoot))
   "Bring up `app`, by default on `port` 8000. If the server was not running, it
 returns `t`. If the server was running, it restarts it and returns nil."
   (let ((rebooted nil))
-    (awhen (gethash (running-port app) *handlers*)
+    (when (handler app)
       ;; The handler already exists, meaning the server is running. Bring it
       ;; down before bringing it up again.
       (setf rebooted t)
-      (clack:stop it))
-    (let ((handler
-            (clack:clackup
-             (lack:builder (build-app app))
-             :port port
-             :server server
-             :use-default-middlewares nil)))
-      (setf (running-port app) port)
-      (setf (gethash port *handlers*) handler)
-      ;; If it was rebooted, return nil. Otherwise t.
-      (not rebooted))))
+      (clack:stop (handler app)))
+    (setf (handler app)
+          (clack:clackup
+           (lack:builder (build-app app))
+           :port port
+           :server server
+           :use-default-middlewares nil))
+    (sleep 1)
+    ;; If it was rebooted, return nil. Otherwise t.
+    (not rebooted)))
 
-(defmethod stop ((app app))
+(defmethod stop ((app base-app))
   "If `app` is running, stop it and return T. Otherwise, do nothing and
 return NIL."
-  (awhen (gethash (running-port app) *handlers*)
-    ;; The handler exists, so the app is up and running. Stop it, and return t.
-    (clack:stop it)
-    (setf (running-port app) nil)
-    t))
+  (if (handler app)
+      ;; The handler exists, so the app is up and running. Stop it, and return t.
+      (progn
+        (clack:stop (handler app))
+        (sleep 1)
+        (setf (handler app) nil)
+        t)
+      ;; Not running
+      nil))
