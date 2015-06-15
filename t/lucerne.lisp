@@ -1,6 +1,8 @@
 (in-package :cl-user)
 (defpackage lucerne-test
-  (:use :cl :lucerne :fiveam))
+  (:use :cl :lucerne :fiveam)
+  (:export :+port+
+           :make-url))
 (in-package :lucerne-test)
 (annot:enable-annot-syntax)
 

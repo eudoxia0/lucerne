@@ -3,6 +3,7 @@
   :license "MIT"
   :depends-on (:lucerne
                :lucerne-hello-world
+               :lucerne-utweet
                :fiveam
                :drakma)
   :description "Lucerne tests"
