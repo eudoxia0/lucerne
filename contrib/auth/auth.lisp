@@ -18,14 +18,15 @@
               :type     function)))
 
 (defun get-userid ()
-  (gethash :userid (lucerne:session lucerne:*request*)))
+  (gethash :userid (lucerne:session)))
 
 (defun login (userid)
-  (setf (gethash :userid (lucerne:session lucerne:*request*))
+  (setf (gethash :userid (lucerne:session))
         userid))
 
 (defun logout ()
-  (remhash :userid (get-session lucerne:*request*)))
+  (remhash :userid (lucerne:session)))
 
 (defun logged-in-p ()
-  (if (get-userid lucerne:*request*) t))
+  (if (get-userid)
+      t))
