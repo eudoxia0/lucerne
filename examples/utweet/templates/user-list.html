@@ -1,0 +1,15 @@
+{% extends "base.html" %}
+
+{% block content %}
+  {% include "navbar.html" %}
+  <div class="panel panel-default">
+    <div class="panel-heading user-brief">
+      <h1>{{ title }}</h1>
+    </div>
+    <div class="panel-body">
+      {% for user in users %}
+        {{ username }}
+      {% endfor %}
+    </div>
+  </div>
+{% endblock %}

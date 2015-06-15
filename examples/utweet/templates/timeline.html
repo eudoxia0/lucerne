@@ -1,0 +1,19 @@
+{% extends "base.html" %}
+
+{% block content %}
+{% include "navbar.html" %}
+<div class="panel panel-default">
+  <div class="panel-heading user-brief">
+    <h1>Timeline</h1>
+  </div>
+  <div class="panel-body">
+    {% if tweets %}
+      ;; Show tweets
+    {% else %}
+      <div class="alert alert-info" role="alert">
+        Your timeline is empty. Why not follow some people?
+      </div>
+    {% endif %}
+  </div>
+</div>
+{% endblock %}

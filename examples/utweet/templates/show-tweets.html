@@ -1,0 +1,12 @@
+<div id="tweets">
+  {% for tweet in tweets do %}
+    <div class="media tweet">
+      <a class="pull-left" href="/profile/{{ author.username }}">
+        <img class="media-object" src="{{ author.avatar-url }}">
+      </a>
+      <div class="media-body">
+        {{ tweet.text }}
+      </div>
+    </div>
+  {% endfor %}
+</div>

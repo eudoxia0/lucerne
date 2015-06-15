@@ -1,0 +1,38 @@
+{% extends "base.html" %}
+
+{% block content %}
+  {% include "navbar.html" %}
+  <div class="panel panel-default">
+    <div class="panel-heading user-brief">
+      <div class="col-md-2">
+        <img src="<%= avatar-url %>">
+      </div>
+      <div class="col-md-10">
+        <ul id="names">
+          <li class="full"><%= (utweet.models:full-name user) %></li>
+          <li class="user"><%= (utweet.models:username user) %></li>
+        </ul>
+        <% when (not is-self) %>
+        <a role="button" class="btn btn-primary">Follow</a>
+        <% end %>
+        <a href="/followers/<%= (utweet.models:username user) %>"
+           role="button" class="btn btn-primary">
+          Followers
+        </a>
+        <a href="/following/<%= (utweet.models:username user) %>"
+           role="button" class="btn btn-primary">
+          Following
+        </a>
+      </div>
+    </div>
+    <div class="panel-body">
+      <% if user-tweets %>
+      <%= (show-tweets user-tweets) %>
+      <% else %>
+      <div class="alert alert-info" role="alert">
+        This user hasn't tweeted anything.
+      </div>
+      <% end %>
+    </div>
+  </div>
+{% endblock %}
