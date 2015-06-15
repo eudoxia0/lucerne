@@ -2,8 +2,8 @@
 (defpackage utweet.models
   (:use :cl)
   (:export :user
-           :user-name
-           :user-email
+           :user-username
+           :user-full-name
            :user-password
            :user-avatar-url)
   (:export :subscription
@@ -26,11 +26,14 @@
 ;;; Models
 
 (defclass user ()
-  ((name :accessor user-name
-              :initarg :name
+  ((username :accessor user-username
+             :initarg :username
+             :type string)
+   (full-name :accessor user-full-name
+              :initarg :full-name
               :type string)
    (email :accessor user-email
-          :initarg :email
+          :initarg email
           :type string)
    (password :accessor user-password
              :initarg :password
@@ -42,18 +45,18 @@
 (defclass subscription ()
   ((follower :reader subscription-follower
              :initarg :follower
-             :type email
-             :documentation "The follower's email.")
+             :type string
+             :documentation "The follower's username.")
    (followed :reader subscription-followed
              :initarg :followed
              :type string
-             :documentation "The followed's email.")))
+             :documentation "The followed's username.")))
 
 (defclass tweet ()
   ((author :reader tweet-author
            :initarg :author
            :type string
-           :documentation "The author's email.")
+           :documentation "The author's username.")
    (text :reader tweet-text
          :initarg :text
          :type string)
@@ -71,15 +74,16 @@
 
 ;;; Functions
 
-(defun find-user (email)
-  "Find a user by email address."
-  (gethash email *users*))
+(defun find-user (username)
+  "Find a user by username."
+  (gethash username *users*))
 
-(defun register-user (&key name email password)
+(defun register-user (&key username full-name email password)
   "Register the user and hash their password."
-  (setf (gethash email *users*)
+  (setf (gethash username *users*)
         (make-instance 'user
-                       :name name
+                       :username username
+                       :full-name full-name
                        :email email
                        :password (cl-pass:hash password)
                        :avatar-url (avatar-api:gravatar email 120))))
@@ -90,7 +94,7 @@
               (find-user (subscription-follower sub)))
           (remove-if-not #'(lambda (sub)
                              (string= (subscription-followed sub)
-                                      (user-email user)))
+                                      (user-username user)))
                          *subscriptions*)))
 
 (defun following (user)
@@ -99,12 +103,12 @@
               (find-user (subscription-followed sub)))
           (remove-if-not #'(lambda (sub)
                              (string= (subscription-follower sub)
-                                      (user-email user)))
+                                      (user-username user)))
                          *subscriptions*)))
 
 (defun tweet (author text)
   (push (make-instance 'tweet
-                       :author (user-email author)
+                       :author (user-username author)
                        :text text)
         *tweets*))
 
@@ -127,14 +131,14 @@
   "Return a user's tweets, sorted through time"
   (sort-tweets (remove-if-not #'(lambda (tweet)
                                   (string= (tweet-author tweet)
-                                           (user-email user)))
+                                           (user-username user)))
                               *tweets*)))
 
 (defun follow (follower followed)
   "Follow a user."
   (push (make-instance 'subscription
-                       :follower (user-email follower)
-                       :followed (user-email followed))
+                       :follower (user-username follower)
+                       :followed (user-username followed))
         *subscriptions*))
 
 ;;; Create some example data
