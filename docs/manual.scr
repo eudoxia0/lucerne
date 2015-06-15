@@ -15,7 +15,27 @@ Lucerne is a web application framework built on
 @end(section)
 
 @begin(section)
+@title(A Wiki in 500 Lines)
+
+@end(section)
+
+@begin(section)
 @title(A Twitter Clone)
+
+@begin(section)
+@title(The Models)
+
+@end(section)
+
+@begin(section)
+@title(The Views)
+
+@end(section)
+
+@begin(section)
+@title(Adding Style)
+
+@end(section)
 
 @end(section)
 
@@ -23,5 +43,52 @@ Lucerne is a web application framework built on
 
 @begin(section)
 @title(Security)
+
+@begin(section)
+@title(Preventing CSRF Vulnerabilities)
+
+@end(section)
+
+@end(section)
+
+@begin(section)
+@title(API Reference)
+
+@begin(section)
+@title(Apps)
+
+@cl:with-package[name="lucerne.app"](
+@cl:doc(class base-app)
+@cl:doc(macro defapp)
+)
+
+@end(section)
+
+@begin(section)
+@title(Views)
+
+@cl:with-package[name="lucerne.views"](
+@cl:doc(macro defview)
+)
+
+@end(section)
+
+@begin(section)
+@title(HTTP)
+
+@cl:with-package[name="lucerne.http"](
+@cl:doc(variable *request*)
+@cl:doc(function respond)
+@cl:doc(function redirect)
+@cl:doc(macro with-params)
+@cl:doc(macro render-template)
+)
+
+@end(section)
+
+@begin(section)
+@title(Control)
+
+@end(section)
 
 @end(section)
