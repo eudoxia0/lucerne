@@ -1,7 +1,4 @@
-(in-package :cl-user)
-(defpackage lucerne-test.examples
-  (:use :cl :fiveam))
-(in-package :lucerne-test.examples)
+(in-package :lucerne-test)
 
 (def-suite examples
   :description "Test Lucerne examples.")
@@ -9,8 +6,8 @@
 
 (test hello-world
   (finishes
-    (lucerne:start lucerne-hello-world:app :port 8000))
-  (is (equal (drakma:http-request "http://localhost:8000/")
+    (lucerne:start lucerne-hello-world:app :port +port+))
+  (is (equal (drakma:http-request (make-url ""))
              "Hello, world!"))
   (finishes
     (lucerne:stop lucerne-hello-world:app)))
