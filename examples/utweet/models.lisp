@@ -33,7 +33,7 @@
               :initarg :full-name
               :type string)
    (email :accessor user-email
-          :initarg email
+          :initarg :email
           :type string)
    (password :accessor user-password
              :initarg :password
@@ -140,18 +140,3 @@
                        :follower (user-username follower)
                        :followed (user-username followed))
         *subscriptions*))
-
-;;; Create some example data
-
-#|
-(let ((eudox (register-user "eudoxia" "eudoxia" "black.linen99@gmail.com" "pass"))
-      (john  (register-user "john" "John Doe" "jdoe@initech.com" "test"))
-      (jane  (register-user "jane" "Jane Doe" "jane.doe@initech.com" "test")))
-  ;; Make eudoxia follow both
-  (follow eudox john)
-  (follow eudox jane)
-  ;; Now write some test tweets
-  (tweet john "Test message BEEP")
-  (tweet jane "Test message BOOP")
-  (tweet john "BEEP BOOP feed me followers"))
-|#
