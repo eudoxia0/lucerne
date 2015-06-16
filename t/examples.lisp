@@ -69,6 +69,9 @@
                           :method :post
                           :parameters (list (cons "username" "eudoxia")
                                             (cons "password" "pass"))))
+    ;; Log out
+    (finishes
+     (drakma:http-request (make-url "signout")))
     ;; Bring it down
     (lucerne:stop utweet.views:app)))
 
