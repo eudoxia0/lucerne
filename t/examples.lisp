@@ -63,15 +63,18 @@
                                             (cons "email" "eudoxiahp@gmail.com")
                                             (cons "password" "pass")
                                             (cons "password-repeat" "pass"))))
-    ;; Log in
-    (finishes
-     (drakma:http-request (make-url "signin")
-                          :method :post
-                          :parameters (list (cons "username" "eudoxia")
-                                            (cons "password" "pass"))))
-    ;; Log out
-    (finishes
-     (drakma:http-request (make-url "signout")))
+    (let ((cookie-jar (make-instance 'drakma:cookie-jar)))
+      ;; Log in
+      (finishes
+        (drakma:http-request (make-url "signin")
+                             :method :post
+                             :parameters (list (cons "username" "eudoxia")
+                                               (cons "password" "pass"))
+                             :cookie-jar cookie-jar))
+      ;; Log out
+      (finishes
+        (drakma:http-request (make-url "signout")
+                             :cookie-jar cookie-jar)))
     ;; Bring it down
     (lucerne:stop utweet.views:app)))
 
