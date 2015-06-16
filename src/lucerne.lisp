@@ -2,19 +2,19 @@
 (defpackage lucerne
   (:use :cl :lucerne.http :lucerne.ctl)
   (:import-from :lucerne.app
-                :<app>
+                :base-app
                 :defapp
                 :register
                 :use)
   (:import-from :lucerne.views
-                :*request*
                 :not-found
                 :defview
                 :route)
-  (:export :<app>
+  (:export :base-app
            :defapp
            :register
            :use
+           :*request*
            :respond
            :redirect
            :session

@@ -4,12 +4,17 @@
   (:import-from :clack.request
                 :parameter
                 :env)
-  (:export :respond
+  (:export :*request*
+           :respond
            :redirect
            :session
            :with-params
            :render-template))
 (in-package :lucerne.http)
+
+(defvar *request* nil
+  "The current request. This will be bound in the body of a view through a
+lexical let.")
 
 (defun respond (body &key (type "text/html;charset=utf-8") (status 200))
   "Construct a response from a `body`, content `type` and `status` code."
@@ -24,15 +29,15 @@ by default)."
         (list :location url)
         (list "")))
 
-(defmacro session (req)
-  "Extract the session hash table from a request.x"
-  `(getf (env ,req) :clack.session))
+(defmacro session ()
+  "Extract the session hash table from the request object."
+  `(getf (env *request*) :clack.session))
 
-(defmacro with-params (req params &rest body)
-  "Extract the parameters in `param` from the request `req`, and bind them for
-use in `body`."
+(defmacro with-params (params &rest body)
+  "Extract the parameters in `param` from the *request*, and bind them for use
+in `body`."
   `(let ,(loop for param in params collecting
-               `(,param (let ((str (parameter ,req
+               `(,param (let ((str (parameter *request*
                                               ,(intern (string-downcase
                                                         (symbol-name param))
                                                        :keyword))))
@@ -41,6 +46,8 @@ use in `body`."
                               str))))
      ,@body))
 
-(defmacro render-template (template-name &rest args)
-  "Render an Eco template `template-name` passing arguments `args`."
-  `(respond (,template-name ,@args)))
+(defmacro render-template ((template) &rest args)
+  "Render a Djula template `template-name` passing arguments `args`."
+  `(respond (djula:render-template* ,template
+                                    nil
+                                    ,@args)))

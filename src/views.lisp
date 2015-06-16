@@ -1,23 +1,18 @@
 (in-package :cl-user)
 (defpackage lucerne.views
-  (:use :cl :trivial-types :cl-annot :anaphora)
+  (:use :cl :trivial-types :cl-annot)
   (:import-from :clack.request
                 :make-request
                 :request-method
                 :script-name
                 :request-uri)
-  (:export :*request*
-           :not-found
+  (:export :not-found
            :define-route
            :defview
            :route))
 (in-package :lucerne.views)
 
-(defvar *request* nil
-  "The current request. This will be bound in the body of a view through a
-lexical let.")
-
-(defmethod not-found ((app lucerne.app:<app>))
+(defmethod not-found ((app lucerne.app:base-app))
   "The basic `not-found` screen: Returns HTTP 404 and the text 'Not found'."
   (lucerne.http:respond "Not found" :type "text/plain" :status 404))
 
@@ -26,7 +21,7 @@ lexical let.")
       (subseq url (1- (length app-prefix)))
       url))
 
-(defmethod clack:call ((app lucerne.app:<app>) env)
+(defmethod clack:call ((app lucerne.app:base-app) env)
   "Routes the request determined by `env` on the application `app`."
   (let* ((req    (make-request env))
          (method (request-method req))
@@ -41,17 +36,17 @@ lexical let.")
         ;; We have a hit
         (funcall route req)
         ;; Not found
-        (let ((*request* req))
+        (let ((lucerne.http:*request* req))
           (not-found app)))))
 
-(defmethod define-route ((app lucerne.app:<app>) url method fn)
+(defmethod define-route ((app lucerne.app:base-app) url method fn)
   "Map `method` calls to `url` in `app` to the function `fn`."
   (myway:connect (lucerne.app:routes app)
                  url
                  (lambda (params)
                    ;; Dispatching returns a function that closes over `params`
                    (lambda (req)
-                     (let ((*request* req))
+                     (let ((lucerne.http:*request* req))
                        (funcall fn params))))
                  :method method))
 
@@ -73,11 +68,14 @@ lexical let.")
 (defmacro defview (name (&rest args) &rest body)
   "Define a view. The body of the view implicitly has access to the request
   object under the name `req`."
-  `(defun ,(intern (symbol-name name)) (params)
-     ;; Here, we extract arguments from the params plist into the arguments
-     ;; defined in the argument list
-     (let ,(mapcar #'(lambda (arg)
-                       `(,arg (getf params ,(intern (symbol-name arg)
-                                                    :keyword))))
-                   args)
-       ,@body)))
+  (alexandria:with-gensyms (params)
+    `(defun ,(intern (symbol-name name)) (,params)
+       ,(unless args
+          `(declare (ignore ,params)))
+       ;; Here, we extract arguments from the params plist into the arguments
+       ;; defined in the argument list
+       (let ,(mapcar #'(lambda (arg)
+                         `(,arg (getf ,params ,(intern (symbol-name arg)
+                                                       :keyword))))
+                     args)
+         ,@body))))

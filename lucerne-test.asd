@@ -2,6 +2,8 @@
   :author "Fernando Borretti"
   :license "MIT"
   :depends-on (:lucerne
+               :lucerne-hello-world
+               :lucerne-utweet
                :fiveam
                :drakma)
   :description "Lucerne tests"
@@ -9,4 +11,5 @@
                 :serial t
                 :components
                 ((:file "lucerne")
-                 (:file "subapps")))))
+                 (:file "subapps")
+                 (:file "examples")))))

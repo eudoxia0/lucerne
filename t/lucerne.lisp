@@ -1,6 +1,8 @@
 (in-package :cl-user)
 (defpackage lucerne-test
-  (:use :cl :lucerne :fiveam))
+  (:use :cl :lucerne :fiveam)
+  (:export :+port+
+           :make-url))
 (in-package :lucerne-test)
 (annot:enable-annot-syntax)
 
@@ -42,7 +44,7 @@
   (finishes
     @route app (:post "/post")
     (defview post-test ()
-      (with-params *request* (a b)
+      (with-params (a b)
         (respond (format nil "~A ~A" a b))))))
 
 (test (bring-up :depends-on define-routes)
@@ -88,5 +90,22 @@
   (is-false
    ;; Try to stop it again, should do nothing and return NIL
    (stop app)))
+
+(defapp error-app)
+
+@route error-app "/"
+(defun error-view ()
+  (error "test"))
+
+(test clack-errors
+  (is-true
+   (start error-app :port +port+ :debug t))
+  (multiple-value-bind (body status &rest others)
+      (drakma:http-request (make-url ""))
+    (declare (ignore body others))
+    (is
+     (equal status 500)))
+  (is-true
+   (stop error-app)))
 
 (run! 'basic)

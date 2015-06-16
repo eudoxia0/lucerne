@@ -1,0 +1,36 @@
+{% extends "base.html" %}
+
+{% block content %}
+  {% include "navbar.html" %}
+  <div class="panel panel-default">
+    <div class="panel-heading user-brief">
+      <div class="col-md-2">
+        <img src="{{ user.avatar-url }}">
+      </div>
+      <div class="col-md-10">
+        <span class="name">{{ user.name }}</span>
+        {% if is-self %}
+          <a href="/followers/{{ user.username }}"
+             role="button" class="btn btn-primary">
+            Followers
+          </a>
+          <a href="/following/{{ user.username }}"
+             role="button" class="btn btn-primary">
+            Following
+          </a>
+        {% else %}
+          <a role="button" class="btn btn-primary">Follow</a>
+        {% endif %}
+      </div>
+    </div>
+    <div class="panel-body">
+      {% if user-tweest %}
+        {% include "show-tweets.html" %}
+      {% else %}
+        <div class="alert alert-info" role="alert">
+          This user hasn't tweeted anything.
+        </div>
+      {% endif %}
+    </div>
+  </div>
+{% endblock %}

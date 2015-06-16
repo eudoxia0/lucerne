@@ -1,14 +1,14 @@
-1(in-package :cl-user)
+(in-package :cl-user)
 (defpackage lucerne.app
-  (:use :cl :trivial-types :cl-annot :anaphora)
-  (:export :<prefix-mount>
+  (:use :cl :trivial-types :cl-annot)
+  (:export :prefix-mount
            :prefix
-           :app
+           :base-app
            :<app>
            :routes
            :middlewares
            :sub-apps
-           :running-port
+           :handler
            :register
            :use
            :build-app
@@ -39,18 +39,18 @@ recursively tranverses the tree of nested applications and sub-applications,
 mounts them all together, and ensures all their middleware is applied."))
 (in-package :lucerne.app)
 
-(defclass <mount-point> () ())
+(defclass mount-point () ())
 
-(defclass <prefix-mount> ()
+(defclass prefix-mount ()
   ((prefix :reader prefix
            :initarg :prefix
            :type string)
    (app :reader app
         :initarg :app
-        :type <app>))
+        :type base-app))
   (:documentation "Maps a prefix to a sub-application."))
 
-(defclass <app> (clack:<component>)
+(defclass base-app (clack:<component>)
   ((routes :accessor routes
            :initform (myway:make-mapper)
            :type myway.mapper:mapper
@@ -63,21 +63,21 @@ mounts them all together, and ensures all their middleware is applied."))
    (sub-apps :accessor sub-apps
              :initarg :sub-apps
              :initform nil
-             :type (proper-list <mount-point>)
+             :type (proper-list mount-point)
              :documentation "A list of sub-application mount points.")
-   (running-port :accessor running-port
-                 :initform nil
-                 :documentation "The port the server is currently running on, if any."))
+   (handler :accessor handler
+            :initform nil
+            :documentation "The server handler."))
   (:documentation "The base class for all Lucerne applications."))
 
-(defmethod register ((app <app>) prefix (sub-app <app>))
+(defmethod register ((app base-app) prefix (sub-app base-app))
   "Mount `sub-app` to `app` on the prefix `prefix`."
-  (push (make-instance '<prefix-mount>
+  (push (make-instance 'prefix-mount
                        :prefix prefix
                        :app sub-app)
         (sub-apps app)))
 
-(defmethod use ((app <app>) middleware)
+(defmethod use ((app base-app) middleware)
   "Make `app` use the middleware instance `middleware`."
   (push middleware (middlewares app)))
 
@@ -103,25 +103,26 @@ and returning the resulting mounted app."
         resulting-app)
       app))
 
-(defmethod build-app ((app <app>))
+(defmethod build-app ((app base-app))
   "Take a Lucerne application, and recursively mount sub-applications and apply
   middleware."
   (apply-middlewares-list (apply-mounts app) (middlewares app)))
 
 ;;; Application definition
 
-(defmacro defapp (name &key middlewares sub-apps (class ''<app>))
+(defmacro defapp (name &key middlewares sub-apps (class ''base-app))
   "Define an application."
-  `(defparameter ,name
-     (let ((app (make-instance ,class)))
-       ;; Use the middlewares
-       ,@(loop for mw in middlewares collecting
-           (if (listp mw)
-               ;; The middleware is a list, so we splice in a make-instance
-               `(use app (make-instance ',(first mw) ,@(rest mw)))
-               ;; The middleware is just a class name with no arguments
-               `(use app (make-instance ',mw))))
-       ;; Register the sub-applications
-       ,@(loop for sub-app in sub-apps collecting
-           `(register app ,(first sub-app) ,(second sub-app)))
-       app)))
+  (alexandria:with-gensyms (app)
+    `(defparameter ,name
+       (let ((,app (make-instance ,class)))
+         ;; Use the middlewares
+         ,@(loop for mw in middlewares collecting
+             (if (listp mw)
+                 ;; The middleware is a list, so we splice in a make-instance
+                 `(use ,app (make-instance ',(first mw) ,@(rest mw)))
+                 ;; The middleware is just a class name with no arguments
+                 `(use ,app (make-instance ',mw))))
+         ;; Register the sub-applications
+         ,@(loop for sub-app in sub-apps collecting
+             `(register ,app ,(first sub-app) ,(second sub-app)))
+         ,app))))
