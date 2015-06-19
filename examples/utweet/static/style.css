@@ -55,3 +55,7 @@ body, html {
     font-size: 32px;
     font-style: bold;
 }
+
+.tweet .media-object {
+    width: 64px;
+}
