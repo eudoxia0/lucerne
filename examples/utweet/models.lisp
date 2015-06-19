@@ -122,9 +122,11 @@
 (defun user-timeline (user)
   "Find the tweets for this user's timeline."
   (sort-tweets (remove-if-not #'(lambda (tweet)
-                                  (member (tweet-author tweet)
-                                          (following user)
-                                          :test #'equal))
+                                  (or (member (tweet-author tweet)
+                                              (following user)
+                                              :test #'equal)
+                                      (string= (tweet-author tweet)
+                                               (user-username user))))
                               *tweets*)))
 
 (defun user-tweets (user)
