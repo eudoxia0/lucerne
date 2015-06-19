@@ -6,6 +6,17 @@
                 :make-url))
 (in-package :lucerne-test.examples)
 
+;;; Utilities
+
+(defmacro response-ok (&rest arguments)
+  `(multiple-value-bind (body status-code &rest other)
+       (drakma:http-request ,@arguments)
+     (declare (ignore body other))
+     (is
+      (equal status-code 200))))
+
+;;; Tests
+
 (def-suite examples
   :description "Test Lucerne examples.")
 (in-suite examples)
@@ -33,11 +44,13 @@
                                            :email "test@example.com"
                                            :password "pass")))
     ;; Follow
-    (utweet.models:follow user john)
-    (utweet.models:follow user jane)
+    (finishes
+      (utweet.models:follow user john)
+      (utweet.models:follow user jane))
     ;; Add some tweets
-    (utweet.models:tweet john "BEEP BOOP feed me followers")
-    (utweet.models:tweet jane "boop beep i'm a test tweet")
+    (finishes
+      (utweet.models:tweet john "BEEP BOOP feed me followers")
+      (utweet.models:tweet jane "boop beep i'm a test tweet"))
     ;; Test the models are consistent
     (is
      (equal (hash-table-count utweet.models::*users*)
@@ -49,32 +62,36 @@
      (equal (length utweet.models::*tweets*)
             2))
     ;; Bring up the app
-    (lucerne:start utweet.views:app :port +port+)
+    (finishes
+      (lucerne:start utweet.views:app :port +port+))
     ;; Requests
     (is-true
      (search "Sign up"
              (drakma:http-request (make-url ""))))
     ;; Create an account
-    (finishes
-     (drakma:http-request (make-url "signup")
-                          :method :post
-                          :parameters (list (cons "username" "eudoxia")
-                                            (cons "name" "Fernando")
-                                            (cons "email" "eudoxiahp@gmail.com")
-                                            (cons "password" "pass")
-                                            (cons "password-repeat" "pass"))))
+    (response-ok (make-url "signup")
+                 :method :post
+                 :parameters (list (cons "username" "eudoxia")
+                                   (cons "name" "Fernando")
+                                   (cons "email" "eudoxiahp@gmail.com")
+                                   (cons "password" "pass")
+                                   (cons "password-repeat" "pass")))
     (let ((cookie-jar (make-instance 'drakma:cookie-jar)))
       ;; Log in
-      (finishes
-        (drakma:http-request (make-url "signin")
-                             :method :post
-                             :parameters (list (cons "username" "eudoxia")
-                                               (cons "password" "pass"))
-                             :cookie-jar cookie-jar))
+      (response-ok (make-url "signin")
+                   :method :post
+                   :parameters (list (cons "username" "eudoxia")
+                                     (cons "password" "pass"))
+                   :cookie-jar cookie-jar)
+      ;; View the timeline
+      (response-ok (make-url "profile/user")
+                   :cookie-jar cookie-jar)
+      ;; View the profile
+      (response-ok (make-url "profile/user")
+                   :cookie-jar cookie-jar)
       ;; Log out
-      (finishes
-        (drakma:http-request (make-url "signout")
-                             :cookie-jar cookie-jar)))
+      (response-ok (make-url "signout")
+                   :cookie-jar cookie-jar))
     ;; Bring it down
     (lucerne:stop utweet.views:app)))
 
