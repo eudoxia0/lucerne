@@ -35,19 +35,23 @@
     (when username
       (utweet.models:find-user username))))
 
+(defun display-tweets (tweets)
+  (loop for tweet in tweets collecting
+    (list :author (utweet.models:find-user (utweet.models:tweet-author tweet))
+          :text (utweet.models:tweet-text tweet))))
+
 ;;; Views
 
 @route app "/"
 (defview index ()
   (if (lucerne-auth:logged-in-p)
       ;; Serve the user's timeline
-      (let ((user (current-user)))
+      (let* ((user (current-user)))
         (render-template (+timeline+)
                          :username (utweet.models:user-username user)
                          :name (utweet.models:user-full-name user)
-                         :timeline (utweet.models:user-timeline user)))
+                         :tweets (display-tweets (utweet.models:user-timeline user))))
       (render-template (+index+))))
-
 
 @route app "/profile/:username"
 (defview profile (username)
@@ -59,9 +63,8 @@
                            username)))
     (render-template (+profile+)
                      :user user
-                     :user-tweets user-tweets
+                     :tweets (display-tweets user-tweets)
                      :is-self is-self)))
-
 
 @route app "/followers/:username"
 (defview user-followers (username)
@@ -79,6 +82,15 @@
                      :title "Following"
                      :users (utweet.models:following user))))
 
+@route app (:post "/tweet")
+(defview tweet ()
+  (if (lucerne-auth:logged-in-p)
+      (let ((user (current-user)))
+        (with-params (tweet)
+          (utweet.models:tweet user tweet))
+        (redirect "/"))
+      (render-template (+index+)
+                       :error "You are not logged in.")))
 
 ;;; Authentication views
 
