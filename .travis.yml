@@ -21,7 +21,7 @@ script:
                  (lambda (c h)
                    (declare (ignore c h))
                    (uiop:quit -1)))'
-       -e '(coveralls:with-coveralls (:exclude (list "lucerne-utweet.asd" "examples" "t"))
+       -e '(coveralls:with-coveralls (:exclude (list "lucerne-utweet.asd" "examples/utweet" "t"))
              (ql:quickload :lucerne-test))'
 
 notifications:
