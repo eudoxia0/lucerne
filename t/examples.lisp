@@ -89,6 +89,14 @@
       ;; View the profile
       (response-ok (make-url "profile/user")
                    :cookie-jar cookie-jar)
+      ;; Send a tweet
+      (response-ok (make-url "tweet")
+                   :method :post
+                   :parameters (list (cons "tweet" "test"))
+                   :cookie-jar cookie-jar)
+      (is
+       (equal (length utweet.models::*tweets*)
+              3))
       ;; Log out
       (response-ok (make-url "signout")
                    :cookie-jar cookie-jar))
