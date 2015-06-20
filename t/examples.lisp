@@ -76,6 +76,9 @@
                                    (cons "email" "eudoxiahp@gmail.com")
                                    (cons "password" "pass")
                                    (cons "password-repeat" "pass")))
+    (finishes
+      (utweet.models:follow (utweet.models:find-user "eudoxia") john)
+      (utweet.models:follow (utweet.models:find-user "eudoxia") jane))
     (let ((cookie-jar (make-instance 'drakma:cookie-jar)))
       ;; Log in
       (response-ok (make-url "signin")
@@ -84,10 +87,15 @@
                                      (cons "password" "pass"))
                    :cookie-jar cookie-jar)
       ;; View the timeline
-      (response-ok (make-url "profile/user")
+      (response-ok (make-url "")
                    :cookie-jar cookie-jar)
       ;; View the profile
-      (response-ok (make-url "profile/user")
+      (response-ok (make-url "profile/eudoxia")
+                   :cookie-jar cookie-jar)
+      ;; Followers and following
+      (response-ok (make-url "followers/eudoxia")
+                   :cookie-jar cookie-jar)
+      (response-ok (make-url "following/eudoxia")
                    :cookie-jar cookie-jar)
       ;; Send a tweet
       (response-ok (make-url "tweet")
