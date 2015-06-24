@@ -14,14 +14,17 @@
                :clack-errors
                :djula
                :log4cl
-               :alexandria)
+               :alexandria
+               :cl-mustache
+               :local-time)
   :components ((:module "src"
                 :components
                 ((:file "app")
                  (:file "http")
                  (:file "views")
                  (:file "control")
-                 (:file "lucerne"))))
+                 (:file "lucerne")
+                 (:file "skeleton"))))
   :description "A Clack-based microframework."
   :long-description
   #.(uiop:read-file-string
