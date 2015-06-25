@@ -8,23 +8,21 @@ env:
 install:
   # Install cl-travis
   - curl https://raw.githubusercontent.com/luismbo/cl-travis/master/install.sh | bash
-  # Clone the latest copies of external libraries
-  - git clone https://github.com/fukamachi/lack.git ~/lisp/lack
-  - git clone https://github.com/fukamachi/clack.git ~/lisp/clack
   # Coveralls support
   - git clone https://github.com/fukamachi/cl-coveralls ~/lisp/cl-coveralls
 
 script:
   - cl -l fiveam -l cl-coveralls
-       -e '(setf fiveam:*debug-on-error* t
-                 fiveam:*debug-on-failure* t)'
+       -e '(setf fiveam:*debug-on-error* t)'
        -e '(setf *debugger-hook*
                  (lambda (c h)
                    (declare (ignore c h))
                    (uiop:quit -1)))'
        -e '(coveralls:with-coveralls (:exclude (list "t"))
-             (ql:quickload :lucerne-test))'
+             (ql:quickload :{{name}}-test))'
 
+{{#email}}
 notifications:
   email:
-    - eudoxiahp@gmail.com
+    - {{email}}
+{{/email}}

@@ -12,4 +12,5 @@
                 :components
                 ((:file "lucerne")
                  (:file "subapps")
-                 (:file "examples")))))
+                 (:file "examples")
+                 (:file "skeleton")))))
