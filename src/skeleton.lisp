@@ -19,6 +19,8 @@
                                             +skeleton-directory+))
         (target-pathname (merge-pathnames target-file
                                           directory)))
+    (let ((target-directory (uiop:pathname-directory-pathname target-pathname)))
+      (ensure-directories-exist target-directory))
     (with-open-file (output-stream target-pathname
                                    :direction :output
                                    :if-exists :supersede
@@ -37,7 +39,7 @@
         collecting
         (strip-whitespace system-name)))
 
-;;;
+;;; Generate
 
 (defun make-project ()
   "Generate a project by interactively asking questions."
@@ -53,8 +55,9 @@
            (email (ask "Author's email"))
            (license (ask "License (e.g. 'MIT', 'GPLv3')"))
            (description (ask "One-line project description"))
-           (dependencies (ask "Dependencies (e.g. 'drakma, quri, clack')"))
-           (sassp (ask "Use Sass as the CSS preprocessor?"))
+           (dependencies (parse-systems-list
+                          (ask "Dependencies (e.g. 'drakma, quri, clack')")))
+           (sassp (yes-or-no "Use Sass as the CSS preprocessor?"))
            (travisp (yes-or-no "Use Travis for continuous integration?"))
            (gitignorep (yes-or-no "Add .gitignore?"))
            (githubp (yes-or-no "Do you have a GitHub username?"))
@@ -63,7 +66,8 @@
                             nil))
            (parent-directory (uiop:ensure-directory-pathname
                               (parse-namestring
-                               (ask "Finally, where do we put the project directory? (e.g. '~/code/')"))))
+                               (ask "Finally, where do we put the project directory? (e.g. '/code/lisp/' will put the project in '/code/lisp/~A')"
+                                    name))))
            (directory (make-pathname :directory (list :relative name)
                                      :defaults parent-directory))
            (plist (list :name name
@@ -76,16 +80,16 @@
                                               dependencies)
                         :sassp sassp
                         :travisp travisp
-                        :github-user github-user
+                        :ghuser github-user
                         ;; For the README
                         :year (write-to-string
                                (local-time:timestamp-year
                                 (local-time:now))))))
       (flet ((generate (skeleton target &rest args)
-               (apply #'skeleton-to-file (append (list skeleton
-                                                       target
-                                                       directory)
-                                                 (append plist args)))))
+               (apply #'skeleton-to-file (list skeleton
+                                               target
+                                               directory
+                                               (append plist args)))))
         ;; Ensure directories exist
         (loop for dir in (list #p"src/" #p"t/" #p"docs/") do
           (ensure-directories-exist (merge-pathnames dir
@@ -98,16 +102,19 @@
         ;; Source code
         (generate #p"asdf.lisp" (parse-namestring
                                  (format nil "~A.asd" name)))
+        (generate #p"src/source.lisp" (parse-namestring
+                                       (format nil "src/~A.lisp" name)))
         ;; Tests
         (generate #p"asdf-test.lisp" (parse-namestring
-                                      (format nil "~A-test-.asd" name)))
-        (generate #p"test.lisp" (parse-namestring
-                                 (format nil "t/~A.lisp" name)))
+                                      (format nil "~A-test.asd" name)))
+        (generate #p"t/test.lisp" (parse-namestring
+                                   (format nil "t/~A.lisp" name)))
         ;; Assets
         (if sassp
-            (generate #p"style.css" #p"assets/css/style.css")
-            (generate #p"style.scss" #p"assets/css/style.scss"))
+            (generate #p"assets/css/style.css" #p"assets/css/style.css")
+            (generate #p"assets/css/style.scss" #p"assets/css/style.scss"))
+        (generate #p"assets/js/scripts.js" #p"assets/js/scripts.js")
         ;; Documentation
-        (generate #p"docs-manifest.lisp" #p"docs/manifest.lisp")
-        (generate #p"docs-manual.scr" #p"docs/manual.scr")
+        (generate #p"docs/manifest.lisp" #p"docs/manifest.lisp")
+        (generate #p"docs/manual.scr" #p"docs/manual.scr")
         t))))
