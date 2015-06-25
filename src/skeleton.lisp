@@ -10,10 +10,6 @@
 (defparameter +skeleton-directory+
   (asdf:system-relative-pathname :lucerne #p"skeleton/"))
 
-(defun render-template (template-string alist)
-  (with-output-to-string (stream)
-    (mustache:render template-string alist stream)))
-
 (defun skeleton-to-file (skeleton-file target-file directory plist-data)
   (let ((skeleton-pathname (merge-pathnames skeleton-file
                                             +skeleton-directory+))
