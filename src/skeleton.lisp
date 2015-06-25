@@ -68,8 +68,8 @@
                               (parse-namestring
                                (ask "Finally, where do we put the project directory? (e.g. '/code/lisp/' will put the project in '/code/lisp/~A')"
                                     name))))
-           (directory (make-pathname :directory (list :relative name)
-                                     :defaults parent-directory))
+           (directory (merge-pathnames (make-pathname :directory (list :relative name))
+                                       parent-directory))
            (plist (list :name name
                         :author author
                         :email email
@@ -111,8 +111,8 @@
                                    (format nil "t/~A.lisp" name)))
         ;; Assets
         (if sassp
-            (generate #p"assets/css/style.css" #p"assets/css/style.css")
-            (generate #p"assets/css/style.scss" #p"assets/css/style.scss"))
+            (generate #p"assets/css/style.scss" #p"assets/css/style.scss")
+            (generate #p"assets/css/style.css" #p"assets/css/style.css"))
         (generate #p"assets/js/scripts.js" #p"assets/js/scripts.js")
         ;; Documentation
         (generate #p"docs/manifest.lisp" #p"docs/manifest.lisp")
