@@ -15,8 +15,9 @@ leak ports and prevent 'address in use' errors."))
 (in-package :lucerne.ctl)
 
 (defmethod start ((app base-app) &key (port 8000) (server :hunchentoot) debug)
-  "Bring up `app`, by default on `port` 8000. If the server was not running, it
-returns `t`. If the server was running, it restarts it and returns nil."
+  "Bring up @cl:param(app), by default on @cl:param(port) 8000. If the server
+was not running, it returns @c(T). If the server was running, it restarts it and
+returns @c(NIL)."
   (let ((rebooted nil))
     (when (handler app)
       ;; The handler already exists, meaning the server is running. Bring it
@@ -39,8 +40,8 @@ returns `t`. If the server was running, it restarts it and returns nil."
     (not rebooted)))
 
 (defmethod stop ((app base-app))
-  "If `app` is running, stop it and return T. Otherwise, do nothing and
-return NIL."
+  "If @cl:param(app) is running, stop it and return @c(T). Otherwise, do nothing
+and return @c(NIL)."
   (if (handler app)
       ;; The handler exists, so the app is up and running. Stop it, and return t.
       (progn
