@@ -1,6 +1,10 @@
 ---
 ---
 
+@import url(http://fonts.googleapis.com/css?family=Lora);
+
+$landing-header-font: 'Lora', serif;
+
 /* Variables */
 
 
@@ -45,6 +49,15 @@ body {
 
       h1, h2 {
         text-align: center;
+        font-family: $landing-header-font;
+      }
+
+      h1 {
+        font-size: 56px;
+      }
+
+      h2 {
+        font-size: 26px;
       }
     }
   }
