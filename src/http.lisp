@@ -17,14 +17,15 @@
 lexical let.")
 
 (defun respond (body &key (type "text/html;charset=utf-8") (status 200))
-  "Construct a response from a `body`, content `type` and `status` code."
+  "Construct a response from a @cl:param(body), content @cl:param(type) and
+@cl:param(status) code."
   (list status
         (list :content-type type)
         (list body)))
 
 (defun redirect (url &key (status 302))
-  "Redirect a user to `url`, optionally specifying a status code `status` (302
-by default)."
+  "Redirect a user to @cl:param(url), optionally specifying a status code
+@cl:param(status) (302 by default)."
   (list status
         (list :location url)
         (list "")))
@@ -33,9 +34,9 @@ by default)."
   "Extract the session hash table from the request object."
   `(getf (env *request*) :clack.session))
 
-(defmacro with-params (params &rest body)
-  "Extract the parameters in `param` from the *request*, and bind them for use
-in `body`."
+(defmacro with-params (params &body body)
+  "Extract the parameters in @cl:param(param) from the @c(*request*), and bind
+them for use in @cl:param(body)."
   `(let ,(loop for param in params collecting
                `(,param (let ((str (parameter *request*
                                               ,(intern (string-downcase
@@ -47,7 +48,8 @@ in `body`."
      ,@body))
 
 (defmacro render-template ((template) &rest args)
-  "Render a Djula template `template-name` passing arguments `args`."
+  "Render a Djula template @cl:param(template-name) passing arguments
+@cl:param(args)."
   `(respond (djula:render-template* ,template
                                     nil
                                     ,@args)))
