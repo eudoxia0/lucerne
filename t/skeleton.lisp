@@ -31,6 +31,9 @@ github-user
         #p"app-test.asd"
         #p"src/app.lisp"
         #p"t/app.lisp"
+        #p"templates/base.html"
+        #p"templates/includes/head.html"
+        #p"templates/index.html"
         #p"docs/manifest.lisp"
         #p"docs/manual.scr"
         #p"assets/js/scripts.js"))
