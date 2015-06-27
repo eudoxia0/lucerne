@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>
+  Starting a Project &ndash; Lucerne
+</title>
+    <link rel="stylesheet" href="static/style.css"/>
+    
+  <link rel="stylesheet" href="static/highlight.css"/>
+  <script src="static/highlight.js"></script>
+
+  </head>
+  <body>
+    
+  <h1 class="doc-title">Lucerne » Starting a Project</h1>
+  <article>
+    <aside>
+      <ol class="toc"><li><a href="overview.html">Overview</a></li><li><a href="example--hello-world.html">Example: Hello World</a></li><li><a href="example--a-twitter-clone.html">Example: A Twitter Clone</a></li><li><a href="starting-a-project.html">Starting a Project</a></li><li><a href="api-reference.html">API Reference</a></li><li><a href="extensions.html">Extensions</a></li></ol>
+    </aside>
+    <main class="codex-section">
+      <p></p><p>Lucerne includes a project skeleton generator, which asks you some questions
+about the project and generates it accordingly.</p><p>The generated app is a runnable application with views and unit tests. To run it:</p><pre><code class="lisp">CL-USER&gt; (ql:quickload :my-app)
+To load &quot;my-app&quot;:
+  Load 1 ASDF system:
+    my-app
+; Loading &quot;my-app&quot;
+[package my-app]............
+(:MY-APP)
+
+CL-USER&gt; (lucerne:start my-app:app :port 8000)
+To load &quot;clack-handler-hunchentoot&quot;:
+  Load 1 ASDF system:
+    clack-handler-hunchentoot
+; Loading &quot;clack-handler-hunchentoot&quot;
+
+Hunchentoot server is started.
+Listening on localhost:8000.
+T
+CL-USER&gt; 
+</code></pre><p></p><p>To run the tests:</p><pre><code class="lisp">(ql:quickload :my-app-test)</code></pre><h1 id="usage">Usage</h1><pre><code class="lisp">CL-USER&gt; (lucerne.skeleton:make-project)
+
+Project name (e.g. 'my-app'): my-app
+
+Author's full name: Fernando Borretti
+
+Author's email: eudoxiahp@gmail.com
+
+License (e.g. 'MIT', 'GPLv3'): MIT
+
+One-line project description: A simple example app.
+
+Dependencies (e.g. 'drakma, quri, clack'): drakma, cl-gists, jonathan
+
+Use Sass as the CSS preprocessor? (yes or no) yes
+
+Use Travis for continuous integration? (yes or no) no
+
+Add .gitignore? (yes or no) yes
+
+Do you have a GitHub username? (yes or no) yes
+
+GitHub username: eudoxia0
+
+Finally, where do we put the project directory? (e.g. '/code/lisp/' will put the project in '/code/lisp/my-app'): /home/eudoxia/code/
+;; Writing /home/eudoxia/code/my-app/README.md
+;; Writing /home/eudoxia/code/my-app/.gitignore
+;; Writing /home/eudoxia/code/my-app/my-app.asd
+;; Writing /home/eudoxia/code/my-app/src/my-app.lisp
+;; Writing /home/eudoxia/code/my-app/my-app-test.asd
+;; Writing /home/eudoxia/code/my-app/t/my-app.lisp
+;; Writing /home/eudoxia/code/my-app/templates/base.html
+;; Writing /home/eudoxia/code/my-app/templates/includes/head.html
+;; Writing /home/eudoxia/code/my-app/templates/index.html
+;; Writing /home/eudoxia/code/my-app/assets/css/style.scss
+;; Writing /home/eudoxia/code/my-app/assets/js/scripts.js
+;; Writing /home/eudoxia/code/my-app/docs/manifest.lisp
+;; Writing /home/eudoxia/code/my-app/docs/manual.scr
+T
+</code></pre><p></p><p>The resulting files and directories, created in <code>/home/eudoxia/code/my-app/</code>,
+look like this:</p><pre><code class="txt">
+my-app/
+    assets/
+        css/
+            style.scss
+        js/
+            scripts.js
+    src/
+        my-app.lisp
+    templates/
+        includes/
+            head.html
+        base.html
+        index.html
+    docs/
+        manifest.lisp
+        manual.scr
+    t/
+        my-app.lisp
+    .gitignore
+    .travis.yml
+    my-app.asd
+    my-app-test.asd
+    README.md
+</code></pre><h1 id="roles-of-the-files">Roles of the Files</h1><dl><dt><code>README.md</code></dt><dd>The app's README, where you describe what it is and how to
+set it up and use it.</dd><dt><code>my-app.asd</code></dt><dd>The system definition file, where you describe the application's metadata,
+dependencies, and the files that make it up.</dd><dt><code>my-app-test.asd</code></dt><dd>The system definition file for the tests.</dd><dt><code>.travis.yml</code></dt><dd>This file provides integration with
+<a href="https://travis-ci.org/">Travis</a> for easily testing the application
+on the cloud.</dd><dt><code>src/my-app.lisp</code></dt><dd>This is the application's main file. It defines the Lucerne application
+object, adds an example route, and sets up the templates and assets. As the
+application grows, you will find it convenient to split these up into other
+files.</dd><dt><code>t/my-app.lisp</code></dt><dd>The main tests file, defines an example test suite, a couple of tests and
+runs them.</dd><dt><code>templates/base.html</code></dt><dd>The base template.</dd><dt><code>templates/index.html</code></dt><dd>The template for the main page.</dd></dl>
+    </main>
+  </article>
+  <footer>
+    <div class="info">
+      Created with <a href="https://github.com/CommonDoc/codex">Codex</a>.
+    </div>
+  </footer>
+  <script>
+   HighlightLisp.highlight_auto();
+  </script>
+
+  </body>
+</html>

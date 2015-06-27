@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>
+  Example: A Twitter Clone &ndash; Lucerne
+</title>
+    <link rel="stylesheet" href="static/style.css"/>
+    
+  <link rel="stylesheet" href="static/highlight.css"/>
+  <script src="static/highlight.js"></script>
+
+  </head>
+  <body>
+    
+  <h1 class="doc-title">Lucerne » Example: A Twitter Clone</h1>
+  <article>
+    <aside>
+      <ol class="toc"><li><a href="overview.html">Overview</a></li><li><a href="example--hello-world.html">Example: Hello World</a></li><li><a href="example--a-twitter-clone.html">Example: A Twitter Clone</a></li><li><a href="starting-a-project.html">Starting a Project</a></li><li><a href="api-reference.html">API Reference</a></li><li><a href="extensions.html">Extensions</a></li></ol>
+    </aside>
+    <main class="codex-section">
+      <p><img src="utweet.png"/></p><p>utweet is a small Twitter clone inspired by Flask's
+<a href="https://github.com/mitsuhiko/flask/tree/master/examples/minitwit/">minitwit</a>
+example.</p><h1 id="the-models">The Models</h1><p></p><p>We'll make a package, <code>utweet.models</code>, specifically for the models (users,
+tweets, et cetera). We'll build an abstract interface that could be implemented
+over an SQL database, a document DB, or, in the case of this example, a simple
+in-memory storage.</p><p>First, we create a <code>models.lisp</code> and add the system definition:</p><pre><code class="lisp">(in-package :cl-user)
+(defpackage utweet.models
+  (:use :cl)
+  ;; Users
+  (:export :user
+           :user-username
+           :user-full-name
+           :user-password
+           :user-avatar-url)
+  ;; Subscriptions (follows)
+  (:export :subscription
+           :subscription-follower
+           :subscription-followed)
+  ;; Tweets
+  (:export :tweet
+           :tweet-author
+           :tweet-text
+           :tweet-timestamp)
+  ;; Some functions
+  (:export :find-user
+           :register-user
+           :followers
+           :following
+           :tweet
+           :user-timeline
+           :user-tweets
+           :follow))
+(in-package :utweet.models)</code></pre><p></p><p>The actual class definitions are fairly straightforward: We define <code>user</code>,
+which represents a user, <code>subscription</code>, which represents a user following
+another, and <code>tweet</code>, which is a single tweet.</p><pre><code class="lisp">(defclass user ()
+  ((username :accessor user-username
+             :initarg :username
+             :type string)
+   (full-name :accessor user-full-name
+              :initarg :full-name
+              :type string)
+   (email :accessor user-email
+          :initarg :email
+          :type string)
+   (password :accessor user-password
+             :initarg :password
+             :type string)
+   (avatar-url :accessor user-avatar-url
+               :initarg :avatar-url
+               :type string))
+  (:documentation &quot;A user.&quot;))
+
+(defclass subscription ()
+  ((follower :reader subscription-follower
+             :initarg :follower
+             :type string
+             :documentation &quot;The follower's username.&quot;)
+   (followed :reader subscription-followed
+             :initarg :followed
+             :type string
+             :documentation &quot;The followed's username.&quot;))
+  (:documentation &quot;Represents a user following another.&quot;))
+
+(defclass tweet ()
+  ((author :reader tweet-author
+           :initarg :author
+           :type string
+           :documentation &quot;The author's username.&quot;)
+   (text :reader tweet-text
+         :initarg :text
+         :type string)
+   (timestamp :reader tweet-timestamp
+              :initarg :timestamp
+              :initform (local-time:now)))
+  (:documentation &quot;A tweet.&quot;))</code></pre><p></p><p>Now, we won't discuss the actual implementation of the functions. Those are
+availble in the
+<a href="https://github.com/eudoxia0/lucerne/tree/master/examples/utweet">source
+code</a>. We'll just present the function documentation which describes the
+interface.<div class="codex-doc-node codex-operator codex-function"><code class="codex-name">find-user</code><code class="codex-lambda-list">(username)</code><div class="codex-docstring">Find a user by <code class="codex-param">username</code>, returns <code>NIL</code> if none is found.</div></div><div class="codex-doc-node codex-operator codex-function"><code class="codex-name">register-user</code><code class="codex-lambda-list">(&amp;key username full-name email password)</code><div class="codex-docstring">Create a new user and hash their <code class="codex-param">password</code>.</div></div><div class="codex-doc-node codex-operator codex-function"><code class="codex-name">followers</code><code class="codex-lambda-list">(user)</code><div class="codex-docstring">List of users (<code>user</code> instances) that follow <code class="codex-param">user</code>.</div></div><div class="codex-doc-node codex-operator codex-function"><code class="codex-name">following</code><code class="codex-lambda-list">(user)</code><div class="codex-docstring">List of users (<code>user</code> instances) the <code class="codex-param">user</code> follows.</div></div><div class="codex-doc-node codex-operator codex-function"><code class="codex-name">tweet</code><code class="codex-lambda-list">(author text)</code><div class="codex-docstring">Create a new tweet from <code class="codex-param">author</code> containing <code class="codex-param">text</code>.</div></div><div class="codex-doc-node codex-operator codex-function"><code class="codex-name">user-timeline</code><code class="codex-lambda-list">(user)</code><div class="codex-docstring">Find the tweets for this <code class="codex-param">user</code>'s timeline.</div></div><div class="codex-doc-node codex-operator codex-function"><code class="codex-name">user-tweets</code><code class="codex-lambda-list">(user)</code><div class="codex-docstring">Return a <code class="codex-param">user</code>'s tweets, sorted through time.</div></div><div class="codex-doc-node codex-operator codex-function"><code class="codex-name">follow</code><code class="codex-lambda-list">(follower followed)</code><div class="codex-docstring">Follow a user. Takes two <code>user</code> instances: <code class="codex-param">follower</code> and <code class="codex-param">followed</code>.</div></div></p><h1 id="the-views">The Views</h1><pre><code class="lisp">(in-package :cl-user)
+(defpackage utweet.views
+  (:use :cl :lucerne)
+  (:export :app))
+(in-package :utweet.views)
+(annot:enable-annot-syntax)</code></pre><pre><code class="lisp">(defapp app
+  :middlewares (clack.middleware.session:&lt;clack-middleware-session&gt;
+                (clack.middleware.static:&lt;clack-middleware-static&gt;
+                 :path &quot;/static/&quot;
+                 :root (asdf:system-relative-pathname :lucerne-utweet
+                                                      #p&quot;examples/utweet/static/&quot;))))</code></pre><pre><code class="lisp">(djula:add-template-directory
+ (asdf:system-relative-pathname :lucerne-utweet #p&quot;examples/utweet/templates/&quot;))
+
+(defparameter +timeline+ (djula:compile-template* &quot;timeline.html&quot;))
+
+(defparameter +index+ (djula:compile-template* &quot;index.html&quot;))
+
+(defparameter +profile+ (djula:compile-template* &quot;profile.html&quot;))
+
+(defparameter +user-list+ (djula:compile-template* &quot;user-list.html&quot;))</code></pre><pre><code class="lisp">(defun current-user ()
+  &quot;Find the user from request data.&quot;
+  (let ((username (lucerne-auth:get-userid)))
+    (when username
+      (utweet.models:find-user username))))
+
+(defun display-tweets (tweets)</code></pre><pre><code class="lisp">@route app &quot;/&quot;
+(defview index ()
+  (if (lucerne-auth:logged-in-p)
+      ;; Serve the user's timeline
+      (let* ((user (current-user)))
+        (render-template (+timeline+)
+                         :username (utweet.models:user-username user)
+                         :name (utweet.models:user-full-name user)
+                         :tweets (display-tweets (utweet.models:user-timeline user))))
+      (render-template (+index+))))</code></pre><pre><code class="lisp">@route app &quot;/profile/:username&quot;
+(defview profile (username)
+  (let* ((user (utweet.models:find-user username))
+         ;; The user's timeline
+         (user-tweets (utweet.models:user-tweets user))
+         ;; Is the user viewing his own profile?
+         (is-self (string= (lucerne-auth:get-userid)
+                           username)))
+    (render-template (+profile+)
+                     :user user
+                     :tweets (display-tweets user-tweets)
+                     :is-self is-self)))</code></pre><pre><code class="lisp">@route app &quot;/followers/:username&quot;
+(defview user-followers (username)
+  (let ((user (utweet.models:find-user username)))
+    (render-template (+user-list+)
+                     :user user
+                     :title &quot;Followers&quot;
+                     :users (utweet.models:followers user))))</code></pre><pre><code class="lisp">@route app &quot;/following/:username&quot;
+(defview user-following (username)
+  (let ((user (utweet.models:find-user username)))
+    (render-template (+user-list+)
+                     :user user
+                     :title &quot;Following&quot;
+                     :users (utweet.models:following user))))</code></pre><pre><code class="lisp">@route app (:post &quot;/tweet&quot;)
+(defview tweet ()
+  (if (lucerne-auth:logged-in-p)
+      (let ((user (current-user)))
+        (with-params (tweet)
+          (utweet.models:tweet user tweet))
+        (redirect &quot;/&quot;))
+      (render-template (+index+)
+                       :error &quot;You are not logged in.&quot;)))</code></pre><h2 id="authentication">Authentication</h2><pre><code class="lisp">@route app (:post &quot;/signup&quot;)
+(defview sign-up ()
+  (with-params (name username email password password-repeat)
+    ;; Does a user with that name exist?
+    (if (utweet.models:find-user username)
+        ;; If it does, render the landing template with a corresponding error
+        (render-template (+index+)
+                         :error &quot;A user with that name already exists.&quot;)
+        ;; We have a new user. Do both passwords match?
+        (if (string= password password-repeat)
+            ;; Okay, the passwords are a match. Let's create the user and return
+            ;; the user to the homepage
+            (progn
+              (utweet.models:register-user :username username
+                                           :full-name name
+                                           :email email
+                                           :password password)
+              (redirect &quot;/&quot;))
+            ;; The passwords don't match
+            (render-template (+index+)
+                             :error &quot;Passwords don't match.&quot;)))))</code></pre><pre><code class="lisp">@route app (:post &quot;/signin&quot;)
+(defview sign-in ()
+  (with-params (username password)
+    ;; Check whether a user with this name exists
+    (let ((user (utweet.models:find-user username)))
+      (if user
+          (if (cl-pass:check-password password
+                                      (utweet.models:user-password user))
+              (progn
+                ;; Log the user in
+                (lucerne-auth:login username)
+                (redirect &quot;/&quot;))
+              ;; Wrong password
+              (render-template (+index+)
+                               :error &quot;Wrong password.&quot;))
+          ;; No such user
+          (render-template (+index+)
+                           :error &quot;No such user.&quot;)))))</code></pre><pre><code class="lisp">@route app &quot;/signout&quot;
+(defview sign-out ()
+  (when (lucerne-auth:logged-in-p)
+    (lucerne-auth:logout))
+  (redirect &quot;/&quot;))</code></pre><h1 id="adding-style">Adding Style</h1>
+    </main>
+  </article>
+  <footer>
+    <div class="info">
+      Created with <a href="https://github.com/CommonDoc/codex">Codex</a>.
+    </div>
+  </footer>
+  <script>
+   HighlightLisp.highlight_auto();
+  </script>
+
+  </body>
+</html>
