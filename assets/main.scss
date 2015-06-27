@@ -3,7 +3,11 @@
 
 @import url(http://fonts.googleapis.com/css?family=Lora);
 
-$landing-header-font: 'Lora', serif;
+$serif: 'Lora', serif;
+$landing-header-font: $serif;
+
+$footer-height: 150px;
+$footer-background: #f9f9f9;
 
 /* Variables */
 
@@ -60,5 +64,19 @@ body {
         font-size: 26px;
       }
     }
+  }
+}
+
+/* Footer style */
+
+footer {
+  height: $footer-height;
+  background: $footer-background;
+
+  .copy {
+    text-align: center;
+    line-height: $footer-height;
+    font-size: 16px;
+    font-family: $serif;
   }
 }
