@@ -42,7 +42,7 @@
   (flet ((ask (format-string &rest args)
            (let ((string (apply #'format (append (list nil format-string)
                                                  args))))
-             (format t "~%~A " string)
+             (format t "~%~A: " string)
              (read-line)))
          (yes-or-no (format-string &rest args)
            (apply #'yes-or-no-p (cons format-string args))))
@@ -105,6 +105,10 @@
                                       (format nil "~A-test.asd" name)))
         (generate #p"t/test.lisp" (parse-namestring
                                    (format nil "t/~A.lisp" name)))
+        ;; Templates
+        (generate #p"templates/base.html" #p"templates/base.html")
+        (generate #p"templates/includes/head.html" #p"templates/includes/head.html")
+        (generate #p"templates/index.html" #p"templates/index.html")
         ;; Assets
         (if sassp
             (generate #p"assets/css/style.scss" #p"assets/css/style.scss")
