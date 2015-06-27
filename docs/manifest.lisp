@@ -1,5 +1,6 @@
 (:docstring-markup-format :scriba
- :systems (:lucerne)
+ :systems (:lucerne
+           :lucerne-utweet)
  :documents ((:title "Lucerne"
               :authors ("Fernando Borretti")
               :output-format (:type :multi-html

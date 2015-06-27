@@ -7,28 +7,87 @@ Lucerne is a web application framework built on
 @end(section)
 
 @begin(section)
-@title(Tutorial)
-
-@begin(section)
-@title(The Simplest Application)
+@title(Example: Hello World)
 
 @end(section)
 
 @begin(section)
-@title(A Wiki in 500 Lines)
+@title(Example: A Twitter Clone)
 
-@end(section)
+@image[src=utweet.png]()
 
-@begin(section)
-@title(A Twitter Clone)
+utweet is a small Twitter clone inspired by Flask's
+@link[uri="https://github.com/mitsuhiko/flask/tree/master/examples/minitwit/"](minitwit)
+example.
 
 @begin(section)
 @title(The Models)
+
+We'll make a package, @c(utweet.models), specifically for the models (users,
+tweets, et cetera). We'll build an abstract interface that could be implemented
+over an SQL database, a document DB, or, in the case of this example, a simple
+in-memory storage.
+
+First, we create a @c(models.lisp) and add the system definition:
+
+@code[lang=lisp](@include[path=../examples/utweet/models.lisp start=1 end=28]())
+
+The actual class definitions are fairly straightforward: We define @c(user),
+which represents a user, @c(subscription), which represents a user following
+another, and @c(tweet), which is a single tweet.
+
+@code[lang=lisp](@include[path=../examples/utweet/models.lisp start=32 end=72]())
+
+Now, we won't discuss the actual implementation of the functions. Those are
+availble in the
+@link[uri="https://github.com/eudoxia0/lucerne/tree/master/examples/utweet"](source
+code). We'll just present the function documentation which describes the
+interface.
+
+@cl:with-package[name="utweet.models"](
+@cl:doc(function find-user)
+@cl:doc(function register-user)
+@cl:doc(function followers)
+@cl:doc(function following)
+@cl:doc(function tweet)
+@cl:doc(function user-timeline)
+@cl:doc(function user-tweets)
+@cl:doc(function follow)
+)
 
 @end(section)
 
 @begin(section)
 @title(The Views)
+
+@code[lang=lisp](@include[path=../examples/utweet/views.lisp start=1 end=6]())
+
+@code[lang=lisp](@include[path=../examples/utweet/views.lisp start=10 end=15]())
+
+@code[lang=lisp](@include[path=../examples/utweet/views.lisp start=19 end=28]())
+
+@code[lang=lisp](@include[path=../examples/utweet/views.lisp start=32 end=38]())
+
+@code[lang=lisp](@include[path=../examples/utweet/views.lisp start=45 end=54]())
+
+@code[lang=lisp](@include[path=../examples/utweet/views.lisp start=56 end=67]())
+
+@code[lang=lisp](@include[path=../examples/utweet/views.lisp start=69 end=75]())
+
+@code[lang=lisp](@include[path=../examples/utweet/views.lisp start=77 end=83]())
+
+@code[lang=lisp](@include[path=../examples/utweet/views.lisp start=85 end=93]())
+
+@begin(section)
+@title(Authentication)
+
+@code[lang=lisp](@include[path=../examples/utweet/views.lisp start=97 end=117]())
+
+@code[lang=lisp](@include[path=../examples/utweet/views.lisp start=119 end=136]())
+
+@code[lang=lisp](@include[path=../examples/utweet/views.lisp start=138 end=142]())
+
+@end(section)
 
 @end(section)
 
@@ -39,13 +98,95 @@ Lucerne is a web application framework built on
 
 @end(section)
 
+@begin(section)
+@title(Starting a Project)
+
+Lucerne includes a project skeleton generator, which asks you some questions
+about the project and generates it accordingly.
+
+The generated app is a runnable application with views and unit tests. To run it:
+
+@code[lang=lisp](@include[path=includes/run-app.lisp]())
+
+To run the tests:
+
+@code[lang=lisp]((ql:quickload :my-app-test))
+
+@begin(section)
+@title(Usage)
+
+@code[lang=lisp](@include[path=includes/project.lisp]())
+
+The resulting files and directories, created in @c(/home/eudoxia/code/my-app/),
+look like this:
+
+@begin[lang=txt](code)
+my-app/
+    assets/
+        css/
+            style.scss
+        js/
+            scripts.js
+    src/
+        my-app.lisp
+    templates/
+        includes/
+            head.html
+        base.html
+        index.html
+    docs/
+        manifest.lisp
+        manual.scr
+    t/
+        my-app.lisp
+    .gitignore
+    .travis.yml
+    my-app.asd
+    my-app-test.asd
+    README.md
+@end(code)
+
 @end(section)
 
 @begin(section)
-@title(Security)
+@title(Roles of the Files)
 
-@begin(section)
-@title(Preventing CSRF Vulnerabilities)
+@begin(deflist)
+
+@term(@c(README.md))
+@def(The app's README, where you describe what it is and how to
+set it up and use it.)
+
+@term(@c(my-app.asd))
+@def(The system definition file, where you describe the application's metadata,
+dependencies, and the files that make it up.)
+
+@term(@c(my-app-test.asd))
+@def(The system definition file for the tests.)
+
+@term(@c(.travis.yml))
+
+@def(This file provides integration with
+@link[uri="https://travis-ci.org/"](Travis) for easily testing the application
+on the cloud.)
+
+@term(@c(src/my-app.lisp))
+@def(This is the application's main file. It defines the Lucerne application
+object, adds an example route, and sets up the templates and assets. As the
+application grows, you will find it convenient to split these up into other
+files.)
+
+@term(@c(t/my-app.lisp))
+@def(The main tests file, defines an example test suite, a couple of tests and
+runs them.)
+
+@term(@c(templates/base.html))
+@def(The base template.)
+
+@term(@c(templates/index.html))
+@def(The template for the main page.)
+
+@end(deflist)
 
 @end(section)
 
@@ -71,15 +212,11 @@ Lucerne is a web application framework built on
 @cl:doc(macro defview)
 )
 
-@end(section)
-
-@begin(section)
-@title(HTTP)
-
 @cl:with-package[name="lucerne.http"](
 @cl:doc(variable *request*)
 @cl:doc(function respond)
 @cl:doc(function redirect)
+@cl:doc(macro session)
 @cl:doc(macro with-params)
 @cl:doc(macro render-template)
 )
@@ -88,6 +225,23 @@ Lucerne is a web application framework built on
 
 @begin(section)
 @title(Control)
+
+@cl:with-package[name="lucerne.ctl"](
+@cl:doc(method start (app base-app) &key (port 8000) (server :hunchentoot) debug)
+@cl:doc(method stop (app base-app))
+)
+
+@end(section)
+
+@end(section)
+
+@begin(section)
+@title(Extensions)
+
+@begin(section)
+@title(lucerne-auth)
+
+lucerne-auth is a contrib module for simple session authentication.
 
 @end(section)
 
