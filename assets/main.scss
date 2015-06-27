@@ -1,6 +1,11 @@
 ---
 ---
 
+/* Variables */
+
+
+/* Global style */
+
 *, *:after, *:before {
   margin: 0;
   padding: 0;
@@ -8,8 +13,6 @@
   -moz-box-sizing: border-box;
   box-sizing: border-box;
 }
-
-/* Global style */
 
 html {
   height: 100vh;
@@ -26,3 +29,23 @@ body {
 }
 
 /* Home page style */
+
+.landing {
+  header {
+    height: 600px;
+    background: linear-gradient(0deg, #3A92FE, #7AB1F7);
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    .names {
+      width: 500px;
+      margin: 0 auto;
+
+      h1, h2 {
+        text-align: center;
+      }
+    }
+  }
+}
