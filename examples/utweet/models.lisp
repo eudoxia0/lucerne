@@ -1,18 +1,22 @@
 (in-package :cl-user)
 (defpackage utweet.models
   (:use :cl)
+  ;; Users
   (:export :user
            :user-username
            :user-full-name
            :user-password
            :user-avatar-url)
+  ;; Subscriptions (follows)
   (:export :subscription
            :subscription-follower
            :subscription-followed)
+  ;; Tweets
   (:export :tweet
            :tweet-author
            :tweet-text
            :tweet-timestamp)
+  ;; Some functions
   (:export :find-user
            :register-user
            :followers
@@ -40,7 +44,8 @@
              :type string)
    (avatar-url :accessor user-avatar-url
                :initarg :avatar-url
-               :type string)))
+               :type string))
+  (:documentation "A user."))
 
 (defclass subscription ()
   ((follower :reader subscription-follower
@@ -50,7 +55,8 @@
    (followed :reader subscription-followed
              :initarg :followed
              :type string
-             :documentation "The followed's username.")))
+             :documentation "The followed's username."))
+  (:documentation "Represents a user following another."))
 
 (defclass tweet ()
   ((author :reader tweet-author
@@ -62,7 +68,8 @@
          :type string)
    (timestamp :reader tweet-timestamp
               :initarg :timestamp
-              :initform (local-time:now))))
+              :initform (local-time:now)))
+  (:documentation "A tweet."))
 
 ;;; Storage
 
@@ -75,11 +82,11 @@
 ;;; Functions
 
 (defun find-user (username)
-  "Find a user by username."
+  "Find a user by @cl:param(username), returns @c(NIL) if none is found."
   (gethash username *users*))
 
 (defun register-user (&key username full-name email password)
-  "Register the user and hash their password."
+  "Create a new user and hash their @cl:param(password)."
   (setf (gethash username *users*)
         (make-instance 'user
                        :username username
@@ -89,7 +96,7 @@
                        :avatar-url (avatar-api:gravatar email 120))))
 
 (defun followers (user)
-  "List of users that follow the user."
+  "List of users (@c(user) instances) that follow @cl:param(user)."
   (mapcar #'(lambda (sub)
               (find-user (subscription-follower sub)))
           (remove-if-not #'(lambda (sub)
@@ -98,7 +105,7 @@
                          *subscriptions*)))
 
 (defun following (user)
-  "List of users the user follows."
+  "List of users (@c(user) instances) the @cl:param(user) follows."
   (mapcar #'(lambda (sub)
               (find-user (subscription-followed sub)))
           (remove-if-not #'(lambda (sub)
@@ -107,6 +114,7 @@
                          *subscriptions*)))
 
 (defun tweet (author text)
+  "Create a new tweet from @cl:param(author) containing @cl:param(text)."
   (push (make-instance 'tweet
                        :author (user-username author)
                        :text text)
@@ -120,7 +128,7 @@
                                     (tweet-timestamp tweet-b)))))
 
 (defun user-timeline (user)
-  "Find the tweets for this user's timeline."
+  "Find the tweets for this @cl:param(user)'s timeline."
   (sort-tweets (remove-if-not #'(lambda (tweet)
                                   (or (member (tweet-author tweet)
                                               (following user)
@@ -130,14 +138,14 @@
                               *tweets*)))
 
 (defun user-tweets (user)
-  "Return a user's tweets, sorted through time"
+  "Return a @cl:param(user)'s tweets, sorted through time."
   (sort-tweets (remove-if-not #'(lambda (tweet)
                                   (string= (tweet-author tweet)
                                            (user-username user)))
                               *tweets*)))
 
 (defun follow (follower followed)
-  "Follow a user."
+  "Follow a user. Takes two @c(user) instances: @cl:param(follower) and @cl:param(followed)."
   (push (make-instance 'subscription
                        :follower (user-username follower)
                        :followed (user-username followed))
