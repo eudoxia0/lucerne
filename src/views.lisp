@@ -13,7 +13,7 @@
 (in-package :lucerne.views)
 
 (defmethod not-found ((app lucerne.app:base-app))
-  "The basic `not-found` screen: Returns HTTP 404 and the text 'Not found'."
+  "The basic not found screen: Returns HTTP 404 and the text 'Not found'."
   (lucerne.http:respond "Not found" :type "text/plain" :status 404))
 
 (defun strip-app-prefix (url app-prefix)
@@ -22,7 +22,8 @@
       url))
 
 (defmethod clack:call ((app lucerne.app:base-app) env)
-  "Routes the request determined by `env` on the application `app`."
+  "Routes the request determined by @cl:param(env) on the application
+@cl:param(app)."
   (let* ((req    (make-request env))
          (method (request-method req))
          (prefix (script-name req))
@@ -40,7 +41,8 @@
           (not-found app)))))
 
 (defmethod define-route ((app lucerne.app:base-app) url method fn)
-  "Map `method` calls to `url` in `app` to the function `fn`."
+  "Map @cl:param(method) calls to @cl:param(url) in @cl:param(app) to the
+function @cl:param(fn)."
   (myway:connect (lucerne.app:routes app)
                  url
                  (lambda (params)
@@ -66,8 +68,8 @@
            ,body))))
 
 (defmacro defview (name (&rest args) &rest body)
-  "Define a view. The body of the view implicitly has access to the request
-  object under the name `req`."
+  "Define a view. The body of the view implicitly has access to the global
+request object @c(*request*)."
   (alexandria:with-gensyms (params)
     `(defun ,(intern (symbol-name name)) (,params)
        ,(unless args
