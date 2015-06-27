@@ -8,3 +8,21 @@
   -moz-box-sizing: border-box;
   box-sizing: border-box;
 }
+
+/* Global style */
+
+html {
+  height: 100vh;
+}
+
+body {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+.content {
+  flex: 1;
+}
+
+/* Home page style */
