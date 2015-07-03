@@ -4,10 +4,23 @@
 Lucerne is a web application framework built on
 @link[uri=http://clacklisp.org/](Clack).
 
-@end(section)
-
 @begin(section)
-@title(Example: Hello World)
+@title(Features)
+
+@begin(deflist)
+@term(Simple)
+@def(Lucerne is inspired by @link[uri="http://flask.pocoo.org/"](Flask), and is
+designed to be small and simple: It's easy to use, and there's little to
+remember in order to use it.)
+
+@term(Built on Clack)
+@def(Lucerne uses Clack, an HTTP server abstraction, which enables it to use any
+server backend supported by Clack @l(ndash) from Hunchentoot the the very fast
+@link[uri="https://github.com/fukamachi/woo"](Woo).)
+
+@end(deflist)
+
+@end(section)
 
 @end(section)
 
@@ -66,26 +79,26 @@ interface.
 
 @code[lang=lisp](@include[path=../examples/utweet/views.lisp start=19 end=28]())
 
-@code[lang=lisp](@include[path=../examples/utweet/views.lisp start=32 end=38]())
+@code[lang=lisp](@include[path=../examples/utweet/views.lisp start=32 end=43]())
 
-@code[lang=lisp](@include[path=../examples/utweet/views.lisp start=45 end=54]())
+@code[lang=lisp](@include[path=../examples/utweet/views.lisp start=47 end=57]())
 
-@code[lang=lisp](@include[path=../examples/utweet/views.lisp start=56 end=67]())
+@code[lang=lisp](@include[path=../examples/utweet/views.lisp start=58 end=69]())
 
-@code[lang=lisp](@include[path=../examples/utweet/views.lisp start=69 end=75]())
+@code[lang=lisp](@include[path=../examples/utweet/views.lisp start=71 end=77]())
 
-@code[lang=lisp](@include[path=../examples/utweet/views.lisp start=77 end=83]())
+@code[lang=lisp](@include[path=../examples/utweet/views.lisp start=79 end=85]())
 
-@code[lang=lisp](@include[path=../examples/utweet/views.lisp start=85 end=93]())
+@code[lang=lisp](@include[path=../examples/utweet/views.lisp start=87 end=95]())
 
 @begin(section)
 @title(Authentication)
 
-@code[lang=lisp](@include[path=../examples/utweet/views.lisp start=97 end=117]())
+@code[lang=lisp](@include[path=../examples/utweet/views.lisp start=99 end=119]())
 
-@code[lang=lisp](@include[path=../examples/utweet/views.lisp start=119 end=136]())
+@code[lang=lisp](@include[path=../examples/utweet/views.lisp start=121 end=138]())
 
-@code[lang=lisp](@include[path=../examples/utweet/views.lisp start=138 end=142]())
+@code[lang=lisp](@include[path=../examples/utweet/views.lisp start=140 end=144]())
 
 @end(section)
 
@@ -242,6 +255,14 @@ runs them.)
 @title(lucerne-auth)
 
 lucerne-auth is a contrib module for simple session authentication.
+
+@cl:with-package[name="lucerne-auth"](
+@cl:doc(function get-userid)
+@cl:doc(function login)
+@cl:doc(function logout)
+@cl:doc(function logged-in-p)
+)
+
 
 @end(section)
 
