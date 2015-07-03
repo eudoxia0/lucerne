@@ -36,6 +36,8 @@
       (utweet.models:find-user username))))
 
 (defun display-tweets (tweets)
+  "Go through a list of tweets, and create a list of plists with data from the
+tweet and its author."
   (loop for tweet in tweets collecting
     (list :author (utweet.models:find-user (utweet.models:tweet-author tweet))
           :text (utweet.models:tweet-text tweet))))
