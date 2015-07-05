@@ -15,7 +15,4 @@ markdown: kramdown
 
 # Links
 links:
-  crane: http://eudoxia0.github.io/crane/
-  postmodern: http://marijnhaverbeke.nl/postmodern/
-  wookie: http://wookie.beeets.com/
-  hunchentoot: http://weitz.de/hunchentoot/
+  cover: https://coveralls.io/r/eudoxia0/lucerne?branch=master
