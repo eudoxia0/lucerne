@@ -1,10 +1,12 @@
 ---
 ---
+@charset 'utf-8';
 
-@import url(http://fonts.googleapis.com/css?family=Lora);
+@import url(http://fonts.googleapis.com/css?family=Cardo:400,400italic,700);
+@import url(http://fonts.googleapis.com/css?family=Open+Sans:300);
 
-$serif: 'Lora', serif;
-$landing-header-font: $serif;
+$serif: 'Cardo', serif;
+$sans-serif: 'Open Sans', sans-serif;
 
 $footer-height: 150px;
 $footer-background: #f9f9f9;
@@ -36,6 +38,12 @@ body {
   flex: 1;
 }
 
+a {
+  color: #3A92FE;
+  text-decoration: none;
+  font-weight: bold;
+}
+
 /* Home page style */
 
 .landing {
@@ -50,18 +58,52 @@ body {
     .names {
       width: 500px;
       margin: 0 auto;
+      background: rgba(255, 255, 255, 0.4);
+      padding: 25px;
 
       h1, h2 {
         text-align: center;
-        font-family: $landing-header-font;
+        font-family: $serif;
       }
 
       h1 {
         font-size: 56px;
+        margin-bottom: 20px;
       }
 
       h2 {
-        font-size: 26px;
+        font-size: 23px;
+        font-family: $sans-serif;
+        font-weight: 300;
+      }
+    }
+  }
+
+  .features {
+    ul {
+      width: 90%;
+      margin: 0 auto;
+      padding: 25px;
+      overflow: hidden;
+
+      li {
+        list-style-type: none;
+        display: inline-block;
+        width: 33%;
+        height: 190px;
+        float: left;
+        padding: 30px;
+
+        h3 {
+          font-family: $serif;
+          margin-bottom: 10px;
+          text-align: center;
+        }
+
+        .text {
+          font-family: $sans-serif;
+          font-weight: 300;
+        }
       }
     }
   }
@@ -77,6 +119,7 @@ footer {
     text-align: center;
     line-height: $footer-height;
     font-size: 16px;
-    font-family: $serif;
+    font-family: $sans-serif;
+    font-weight: 300;
   }
 }
