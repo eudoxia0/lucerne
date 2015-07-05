@@ -1,0 +1,93 @@
+@begin(section)
+@title(Starting a Project)
+
+Lucerne includes a project skeleton generator, which asks you some questions
+about the project and generates it accordingly.
+
+The generated app is a runnable application with views and unit tests. To run it:
+
+@code[lang=lisp](@include[path=includes/run-app.lisp]())
+
+To run the tests:
+
+@code[lang=lisp]((ql:quickload :my-app-test))
+
+@begin(section)
+@title(Usage)
+
+@code[lang=lisp](@include[path=includes/project.lisp]())
+
+The resulting files and directories, created in @c(/home/eudoxia/code/my-app/),
+look like this:
+
+@begin[lang=txt](code)
+my-app/
+    assets/
+        css/
+            style.scss
+        js/
+            scripts.js
+    src/
+        my-app.lisp
+    templates/
+        includes/
+            head.html
+        base.html
+        index.html
+    docs/
+        manifest.lisp
+        manual.scr
+    t/
+        my-app.lisp
+    .gitignore
+    .travis.yml
+    my-app.asd
+    my-app-test.asd
+    README.md
+@end(code)
+
+@end(section)
+
+@begin(section)
+@title(Roles of the Files)
+
+@begin(deflist)
+
+@term(@c(README.md))
+@def(The app's README, where you describe what it is and how to
+set it up and use it.)
+
+@term(@c(my-app.asd))
+@def(The system definition file, where you describe the application's metadata,
+dependencies, and the files that make it up.)
+
+@term(@c(my-app-test.asd))
+@def(The system definition file for the tests.)
+
+@term(@c(.travis.yml))
+
+@def(This file provides integration with
+@link[uri="https://travis-ci.org/"](Travis) for easily testing the application
+on the cloud.)
+
+@term(@c(src/my-app.lisp))
+@def(This is the application's main file. It defines the Lucerne application
+object, adds an example route, and sets up the templates and assets. As the
+application grows, you will find it convenient to split these up into other
+files.)
+
+@term(@c(t/my-app.lisp))
+@def(The main tests file, defines an example test suite, a couple of tests and
+runs them.)
+
+@term(@c(templates/base.html))
+@def(The base template.)
+
+@term(@c(templates/index.html))
+@def(The template for the main page.)
+
+@end(deflist)
+
+@end(section)
+
+@end(section)

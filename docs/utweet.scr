@@ -1,0 +1,86 @@
+@begin(section)
+@title(Example: A Twitter Clone)
+
+@image[src=utweet.png]()
+
+utweet is a small Twitter clone inspired by Flask's
+@link[uri="https://github.com/mitsuhiko/flask/tree/master/examples/minitwit/"](minitwit)
+example.
+
+@begin(section)
+@title(The Models)
+
+We'll make a package, @c(utweet.models), specifically for the models (users,
+tweets, et cetera). We'll build an abstract interface that could be implemented
+over an SQL database, a document DB, or, in the case of this example, a simple
+in-memory storage.
+
+First, we create a @c(models.lisp) and add the system definition:
+
+@code[lang=lisp](@include[path=../examples/utweet/models.lisp start=1 end=28]())
+
+The actual class definitions are fairly straightforward: We define @c(user),
+which represents a user, @c(subscription), which represents a user following
+another, and @c(tweet), which is a single tweet.
+
+@code[lang=lisp](@include[path=../examples/utweet/models.lisp start=32 end=72]())
+
+Now, we won't discuss the actual implementation of the functions. Those are
+availble in the
+@link[uri="https://github.com/eudoxia0/lucerne/tree/master/examples/utweet"](source
+code). We'll just present the function documentation which describes the
+interface.
+
+@cl:with-package[name="utweet.models"](
+@cl:doc(function find-user)
+@cl:doc(function register-user)
+@cl:doc(function followers)
+@cl:doc(function following)
+@cl:doc(function tweet)
+@cl:doc(function user-timeline)
+@cl:doc(function user-tweets)
+@cl:doc(function follow)
+)
+
+@end(section)
+
+@begin(section)
+@title(The Views)
+
+@code[lang=lisp](@include[path=../examples/utweet/views.lisp start=1 end=6]())
+
+@code[lang=lisp](@include[path=../examples/utweet/views.lisp start=10 end=15]())
+
+@code[lang=lisp](@include[path=../examples/utweet/views.lisp start=19 end=28]())
+
+@code[lang=lisp](@include[path=../examples/utweet/views.lisp start=32 end=43]())
+
+@code[lang=lisp](@include[path=../examples/utweet/views.lisp start=47 end=57]())
+
+@code[lang=lisp](@include[path=../examples/utweet/views.lisp start=58 end=69]())
+
+@code[lang=lisp](@include[path=../examples/utweet/views.lisp start=71 end=77]())
+
+@code[lang=lisp](@include[path=../examples/utweet/views.lisp start=79 end=85]())
+
+@code[lang=lisp](@include[path=../examples/utweet/views.lisp start=87 end=95]())
+
+@begin(section)
+@title(Authentication)
+
+@code[lang=lisp](@include[path=../examples/utweet/views.lisp start=99 end=119]())
+
+@code[lang=lisp](@include[path=../examples/utweet/views.lisp start=121 end=138]())
+
+@code[lang=lisp](@include[path=../examples/utweet/views.lisp start=140 end=144]())
+
+@end(section)
+
+@end(section)
+
+@begin(section)
+@title(Adding Style)
+
+@end(section)
+
+@end(section)

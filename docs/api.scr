@@ -1,0 +1,42 @@
+@begin(section)
+@title(API Reference)
+
+@begin(section)
+@title(Apps)
+
+@cl:with-package[name="lucerne.app"](
+@cl:doc(class base-app)
+@cl:doc(macro defapp)
+)
+
+@end(section)
+
+@begin(section)
+@title(Views)
+
+@cl:with-package[name="lucerne.views"](
+@cl:doc(macro defview)
+)
+
+@cl:with-package[name="lucerne.http"](
+@cl:doc(variable *request*)
+@cl:doc(function respond)
+@cl:doc(function redirect)
+@cl:doc(macro session)
+@cl:doc(macro with-params)
+@cl:doc(macro render-template)
+)
+
+@end(section)
+
+@begin(section)
+@title(Control)
+
+@cl:with-package[name="lucerne.ctl"](
+@cl:doc(method start (app base-app) &key (port 8000) (server :hunchentoot) debug)
+@cl:doc(method stop (app base-app))
+)
+
+@end(section)
+
+@end(section)

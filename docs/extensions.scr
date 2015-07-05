@@ -1,0 +1,18 @@
+@begin(section)
+@title(Extensions)
+
+@begin(section)
+@title(lucerne-auth)
+
+lucerne-auth is a contrib module for simple session authentication.
+
+@cl:with-package[name="lucerne-auth"](
+@cl:doc(function get-userid)
+@cl:doc(function login)
+@cl:doc(function logout)
+@cl:doc(function logged-in-p)
+)
+
+@end(section)
+
+@end(section)

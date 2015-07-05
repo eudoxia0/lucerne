@@ -6,4 +6,8 @@
               :authors ("Fernando Borretti")
               :output-format (:type :multi-html
                               :template :minima)
-              :sources ("manual.scr"))))
+              :sources ("overview.scr"
+                        "utweet.scr"
+                        "project.scr"
+                        "api.scr"
+                        "extensions.scr"))))
