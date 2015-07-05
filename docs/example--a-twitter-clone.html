@@ -18,7 +18,7 @@
   <h1 class="doc-title">Lucerne » Example: A Twitter Clone</h1>
   <article>
     <aside>
-      <ol class="toc"><li><a href="overview.html">Overview</a></li><li><a href="example--hello-world.html">Example: Hello World</a></li><li><a href="example--a-twitter-clone.html">Example: A Twitter Clone</a></li><li><a href="starting-a-project.html">Starting a Project</a></li><li><a href="api-reference.html">API Reference</a></li><li><a href="extensions.html">Extensions</a></li></ol>
+      <ol class="toc"><li><a href="overview.html">Overview</a></li><li><a href="example--a-twitter-clone.html">Example: A Twitter Clone</a></li><li><a href="starting-a-project.html">Starting a Project</a></li><li><a href="api-reference.html">API Reference</a></li><li><a href="extensions.html">Extensions</a></li></ol>
     </aside>
     <main class="codex-section">
       <p><img src="utweet.png"/></p><p>utweet is a small Twitter clone inspired by Flask's
@@ -124,7 +124,12 @@ interface.<div class="codex-doc-node codex-operator codex-function"><code class=
     (when username
       (utweet.models:find-user username))))
 
-(defun display-tweets (tweets)</code></pre><pre><code class="lisp">@route app &quot;/&quot;
+(defun display-tweets (tweets)
+  &quot;Go through a list of tweets, and create a list of plists with data from the
+tweet and its author.&quot;
+  (loop for tweet in tweets collecting
+    (list :author (utweet.models:find-user (utweet.models:tweet-author tweet))
+          :text (utweet.models:tweet-text tweet))))</code></pre><pre><code class="lisp">@route app &quot;/&quot;
 (defview index ()
   (if (lucerne-auth:logged-in-p)
       ;; Serve the user's timeline
@@ -133,7 +138,8 @@ interface.<div class="codex-doc-node codex-operator codex-function"><code class=
                          :username (utweet.models:user-username user)
                          :name (utweet.models:user-full-name user)
                          :tweets (display-tweets (utweet.models:user-timeline user))))
-      (render-template (+index+))))</code></pre><pre><code class="lisp">@route app &quot;/profile/:username&quot;
+      (render-template (+index+))))
+</code></pre><pre><code class="lisp">@route app &quot;/profile/:username&quot;
 (defview profile (username)
   (let* ((user (utweet.models:find-user username))
          ;; The user's timeline
