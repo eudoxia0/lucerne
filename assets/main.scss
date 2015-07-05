@@ -5,14 +5,29 @@
 @import url(http://fonts.googleapis.com/css?family=Cardo:400,400italic,700);
 @import url(http://fonts.googleapis.com/css?family=Open+Sans:300);
 
+/* Variables */
+
 $serif: 'Cardo', serif;
 $sans-serif: 'Open Sans', sans-serif;
 
 $footer-height: 150px;
 $footer-background: #f9f9f9;
 
-/* Variables */
+$mobile-size: 768px;
 
+/* Mixins */
+
+@mixin on-desktop() {
+  @media (min-width: $mobile-size) {
+    @content;
+  }
+}
+
+@mixin on-mobile() {
+  @media (max-width: $mobile-size) {
+    @content;
+  }
+}
 
 /* Global style */
 
@@ -56,7 +71,14 @@ a {
     justify-content: center;
 
     .names {
-      width: 500px;
+      @include on-desktop() {
+        width: 500px;
+      }
+
+      @include on-mobile() {
+        width: 100%;
+      }
+
       margin: 0 auto;
       background: rgba(255, 255, 255, 0.2);
       padding: 25px;
@@ -89,10 +111,20 @@ a {
 
       li {
         list-style-type: none;
-        display: inline-block;
-        width: 33%;
-        height: 190px;
-        float: left;
+
+        @include on-desktop() {
+          width: 33%;
+          display: inline-block;
+          height: 190px;
+          float: left;
+        }
+
+        @include on-mobile() {
+          width: 100%;
+          display: block;
+          margin-bottom: 20px;
+        }
+
         padding: 30px;
 
         h3 {
@@ -110,12 +142,18 @@ a {
   }
 
   .links {
-    height: 200px;
+    @include on-desktop() {
+      min-height: 200px;
+    }
     line-height: 200px;
     background: linear-gradient(0deg, #3A92FE, #7AB1F7);
     text-align: center;
 
     a {
+      @include on-mobile() {
+        width: 100%;
+      }
+
       color: white;
       font-size: 26px;
       border: 1px solid white;
