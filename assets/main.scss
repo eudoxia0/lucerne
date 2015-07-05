@@ -107,6 +107,24 @@ a {
       }
     }
   }
+
+  .links {
+    height: 200px;
+    line-height: 200px;
+    background: linear-gradient(0deg, #3A92FE, #7AB1F7);
+    text-align: center;
+
+    a {
+      color: white;
+      font-size: 26px;
+      border: 1px solid white;
+      border-radius: 5px;
+      padding: 20px;
+      margin: 20px;
+      font-family: $sans-serif;
+      font-weight: 300;
+    }
+  }
 }
 
 /* Footer style */
