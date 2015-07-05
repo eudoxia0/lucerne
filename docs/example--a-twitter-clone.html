@@ -99,17 +99,22 @@ another, and <code>tweet</code>, which is a single tweet.</p><pre><code class="l
 availble in the
 <a href="https://github.com/eudoxia0/lucerne/tree/master/examples/utweet">source
 code</a>. We'll just present the function documentation which describes the
-interface.<div class="codex-doc-node codex-operator codex-function"><code class="codex-name">find-user</code><code class="codex-lambda-list">(username)</code><div class="codex-docstring">Find a user by <code class="codex-param">username</code>, returns <code>NIL</code> if none is found.</div></div><div class="codex-doc-node codex-operator codex-function"><code class="codex-name">register-user</code><code class="codex-lambda-list">(&amp;key username full-name email password)</code><div class="codex-docstring">Create a new user and hash their <code class="codex-param">password</code>.</div></div><div class="codex-doc-node codex-operator codex-function"><code class="codex-name">followers</code><code class="codex-lambda-list">(user)</code><div class="codex-docstring">List of users (<code>user</code> instances) that follow <code class="codex-param">user</code>.</div></div><div class="codex-doc-node codex-operator codex-function"><code class="codex-name">following</code><code class="codex-lambda-list">(user)</code><div class="codex-docstring">List of users (<code>user</code> instances) the <code class="codex-param">user</code> follows.</div></div><div class="codex-doc-node codex-operator codex-function"><code class="codex-name">tweet</code><code class="codex-lambda-list">(author text)</code><div class="codex-docstring">Create a new tweet from <code class="codex-param">author</code> containing <code class="codex-param">text</code>.</div></div><div class="codex-doc-node codex-operator codex-function"><code class="codex-name">user-timeline</code><code class="codex-lambda-list">(user)</code><div class="codex-docstring">Find the tweets for this <code class="codex-param">user</code>'s timeline.</div></div><div class="codex-doc-node codex-operator codex-function"><code class="codex-name">user-tweets</code><code class="codex-lambda-list">(user)</code><div class="codex-docstring">Return a <code class="codex-param">user</code>'s tweets, sorted through time.</div></div><div class="codex-doc-node codex-operator codex-function"><code class="codex-name">follow</code><code class="codex-lambda-list">(follower followed)</code><div class="codex-docstring">Follow a user. Takes two <code>user</code> instances: <code class="codex-param">follower</code> and <code class="codex-param">followed</code>.</div></div></p><h1 id="the-views">The Views</h1><pre><code class="lisp">(in-package :cl-user)
+interface.<div class="codex-doc-node codex-operator codex-function"><code class="codex-name">find-user</code><code class="codex-lambda-list">(username)</code><div class="codex-docstring">Find a user by <code class="codex-param">username</code>, returns <code>NIL</code> if none is found.</div></div><div class="codex-doc-node codex-operator codex-function"><code class="codex-name">register-user</code><code class="codex-lambda-list">(&amp;key username full-name email password)</code><div class="codex-docstring">Create a new user and hash their <code class="codex-param">password</code>.</div></div><div class="codex-doc-node codex-operator codex-function"><code class="codex-name">followers</code><code class="codex-lambda-list">(user)</code><div class="codex-docstring">List of users (<code>user</code> instances) that follow <code class="codex-param">user</code>.</div></div><div class="codex-doc-node codex-operator codex-function"><code class="codex-name">following</code><code class="codex-lambda-list">(user)</code><div class="codex-docstring">List of users (<code>user</code> instances) the <code class="codex-param">user</code> follows.</div></div><div class="codex-doc-node codex-operator codex-function"><code class="codex-name">tweet</code><code class="codex-lambda-list">(author text)</code><div class="codex-docstring">Create a new tweet from <code class="codex-param">author</code> containing <code class="codex-param">text</code>.</div></div><div class="codex-doc-node codex-operator codex-function"><code class="codex-name">user-timeline</code><code class="codex-lambda-list">(user)</code><div class="codex-docstring">Find the tweets for this <code class="codex-param">user</code>'s timeline.</div></div><div class="codex-doc-node codex-operator codex-function"><code class="codex-name">user-tweets</code><code class="codex-lambda-list">(user)</code><div class="codex-docstring">Return a <code class="codex-param">user</code>'s tweets, sorted through time.</div></div><div class="codex-doc-node codex-operator codex-function"><code class="codex-name">follow</code><code class="codex-lambda-list">(follower followed)</code><div class="codex-docstring">Follow a user. Takes two <code>user</code> instances: <code class="codex-param">follower</code> and <code class="codex-param">followed</code>.</div></div></p><h1 id="the-views">The Views</h1><p></p><p>First, we'll create the <code>utweet.views</code> package. We'll <code>:use :lucerne</code> to
+import everything and simply export the <code>app</code>.</p><pre><code class="lisp">(in-package :cl-user)
 (defpackage utweet.views
   (:use :cl :lucerne)
   (:export :app))
 (in-package :utweet.views)
-(annot:enable-annot-syntax)</code></pre><pre><code class="lisp">(defapp app
+(annot:enable-annot-syntax)</code></pre><p></p><p>That last line is important, it allows us to use the reader macros Lucerne uses
+for routing.</p><p>Now, we define the application. We use the session middleware, since we'll need
+it for authentication, and also the static files middleware: This takes every
+request that starts with <code>/static/</code> and finds the corresponding file in the
+<code>examples/utweet/static/</code> folder inside the Lucerne source.</p><pre><code class="lisp">(defapp app
   :middlewares (clack.middleware.session:&lt;clack-middleware-session&gt;
                 (clack.middleware.static:&lt;clack-middleware-static&gt;
                  :path &quot;/static/&quot;
                  :root (asdf:system-relative-pathname :lucerne-utweet
-                                                      #p&quot;examples/utweet/static/&quot;))))</code></pre><pre><code class="lisp">(djula:add-template-directory
+                                                      #p&quot;examples/utweet/static/&quot;))))</code></pre><p></p><p>Now we add some Djula templates for the different pages:</p><pre><code class="lisp">(djula:add-template-directory
  (asdf:system-relative-pathname :lucerne-utweet #p&quot;examples/utweet/templates/&quot;))
 
 (defparameter +timeline+ (djula:compile-template* &quot;timeline.html&quot;))
@@ -118,7 +123,11 @@ interface.<div class="codex-doc-node codex-operator codex-function"><code class=
 
 (defparameter +profile+ (djula:compile-template* &quot;profile.html&quot;))
 
-(defparameter +user-list+ (djula:compile-template* &quot;user-list.html&quot;))</code></pre><pre><code class="lisp">(defun current-user ()
+(defparameter +user-list+ (djula:compile-template* &quot;user-list.html&quot;))</code></pre><p></p><p>Next up, a couple of utility functions: <code>current-user</code> finds the user model
+that corresponds to the username stored in Lucerne's session
+data. <code>display-tweets</code> is a function to make templating easier: It goes
+through a list of tweets, and creates a plist that has the tweet object as well
+as the author object (instead of referencing the author through its username).</p><pre><code class="lisp">(defun current-user ()
   &quot;Find the user from request data.&quot;
   (let ((username (lucerne-auth:get-userid)))
     (when username
@@ -129,7 +138,9 @@ interface.<div class="codex-doc-node codex-operator codex-function"><code class=
 tweet and its author.&quot;
   (loop for tweet in tweets collecting
     (list :author (utweet.models:find-user (utweet.models:tweet-author tweet))
-          :text (utweet.models:tweet-text tweet))))</code></pre><pre><code class="lisp">@route app &quot;/&quot;
+          :text (utweet.models:tweet-text tweet))))</code></pre><p></p><p>The index view is very simple: If the user is logged in, find the user object,
+and display their timeline. If the user is not logged in, display the landing
+page.</p><pre><code class="lisp">@route app &quot;/&quot;
 (defview index ()
   (if (lucerne-auth:logged-in-p)
       ;; Serve the user's timeline
@@ -139,7 +150,10 @@ tweet and its author.&quot;
                          :name (utweet.models:user-full-name user)
                          :tweets (display-tweets (utweet.models:user-timeline user))))
       (render-template (+index+))))
-</code></pre><pre><code class="lisp">@route app &quot;/profile/:username&quot;
+</code></pre><p></p><p>When visiting a user's profile, we find that user by name, get a list of their
+tweets, and render the profile page template. We additionally ask whether the
+user is the logged-in user: This lets us know whether we should display buttons
+to follow unfollow the user.</p><pre><code class="lisp">@route app &quot;/profile/:username&quot;
 (defview profile (username)
   (let* ((user (utweet.models:find-user username))
          ;; The user's timeline
@@ -150,19 +164,23 @@ tweet and its author.&quot;
     (render-template (+profile+)
                      :user user
                      :tweets (display-tweets user-tweets)
-                     :is-self is-self)))</code></pre><pre><code class="lisp">@route app &quot;/followers/:username&quot;
+                     :is-self is-self)))</code></pre><p></p><p>These next views are quite simple, <code>utweet.models</code> does most of our work.</p><pre><code class="lisp">@route app &quot;/followers/:username&quot;
 (defview user-followers (username)
   (let ((user (utweet.models:find-user username)))
     (render-template (+user-list+)
                      :user user
                      :title &quot;Followers&quot;
-                     :users (utweet.models:followers user))))</code></pre><pre><code class="lisp">@route app &quot;/following/:username&quot;
+                     :users (utweet.models:followers user))))
+
+@route app &quot;/following/:username&quot;
 (defview user-following (username)
   (let ((user (utweet.models:find-user username)))
     (render-template (+user-list+)
                      :user user
                      :title &quot;Following&quot;
-                     :users (utweet.models:following user))))</code></pre><pre><code class="lisp">@route app (:post &quot;/tweet&quot;)
+                     :users (utweet.models:following user))))</code></pre><p></p><p>And, finally, the core of the app: Tweeting something. If the user's not logged
+in, we give them an error, otherwise, we create the tweet and redirect them to
+the home page.</p><pre><code class="lisp">@route app (:post &quot;/tweet&quot;)
 (defview tweet ()
   (if (lucerne-auth:logged-in-p)
       (let ((user (current-user)))
@@ -170,7 +188,11 @@ tweet and its author.&quot;
           (utweet.models:tweet user tweet))
         (redirect &quot;/&quot;))
       (render-template (+index+)
-                       :error &quot;You are not logged in.&quot;)))</code></pre><h2 id="authentication">Authentication</h2><pre><code class="lisp">@route app (:post &quot;/signup&quot;)
+                       :error &quot;You are not logged in.&quot;)))</code></pre><h2 id="authentication">Authentication</h2><p></p><p>Here we implement all the authentication views. We'll use the
+<a href="https://github.com/eudoxia0/cl-pass/"><code>cl-pass</code></a> library so we
+don't have to concern ourselves with security needs.</p><p>The signup view is the most complex: We have to check if a user with that name
+exists and that the supplied passwords match. If both check out, we create the
+user and redirect them to the home page.</p><pre><code class="lisp">@route app (:post &quot;/signup&quot;)
 (defview sign-up ()
   (with-params (name username email password password-repeat)
     ;; Does a user with that name exist?
@@ -190,7 +212,8 @@ tweet and its author.&quot;
               (redirect &quot;/&quot;))
             ;; The passwords don't match
             (render-template (+index+)
-                             :error &quot;Passwords don't match.&quot;)))))</code></pre><pre><code class="lisp">@route app (:post &quot;/signin&quot;)
+                             :error &quot;Passwords don't match.&quot;)))))</code></pre><p></p><p>To sign in, we both check whether a username by that name exists and if the
+password is a match. If so, we log them in and redirect them to their timeline.</p><pre><code class="lisp">@route app (:post &quot;/signin&quot;)
 (defview sign-in ()
   (with-params (username password)
     ;; Check whether a user with this name exists
@@ -207,11 +230,12 @@ tweet and its author.&quot;
                                :error &quot;Wrong password.&quot;))
           ;; No such user
           (render-template (+index+)
-                           :error &quot;No such user.&quot;)))))</code></pre><pre><code class="lisp">@route app &quot;/signout&quot;
+                           :error &quot;No such user.&quot;)))))</code></pre><p></p><p>Signing out is simpler: If the user is logged in, sign them out. Otherwise, do
+nothing. Then redirect them to the home.</p><pre><code class="lisp">@route app &quot;/signout&quot;
 (defview sign-out ()
   (when (lucerne-auth:logged-in-p)
     (lucerne-auth:logout))
-  (redirect &quot;/&quot;))</code></pre><h1 id="adding-style">Adding Style</h1>
+  (redirect &quot;/&quot;))</code></pre>
     </main>
   </article>
   <footer>
