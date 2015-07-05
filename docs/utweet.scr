@@ -47,39 +47,80 @@ interface.
 @begin(section)
 @title(The Views)
 
+First, we'll create the @c(utweet.views) package. We'll @c(:use :lucerne) to
+import everything and simply export the @c(app).
+
 @code[lang=lisp](@include[path=../examples/utweet/views.lisp start=1 end=6]())
+
+That last line is important, it allows us to use the reader macros Lucerne uses
+for routing.
+
+Now, we define the application. We use the session middleware, since we'll need
+it for authentication, and also the static files middleware: This takes every
+request that starts with @c(/static/) and finds the corresponding file in the
+@c(examples/utweet/static/) folder inside the Lucerne source.
 
 @code[lang=lisp](@include[path=../examples/utweet/views.lisp start=10 end=15]())
 
+Now we add some Djula templates for the different pages:
+
 @code[lang=lisp](@include[path=../examples/utweet/views.lisp start=19 end=28]())
+
+Next up, a couple of utility functions: @c(current-user) finds the user model
+that corresponds to the username stored in Lucerne's session
+data. @c(display-tweets) is a function to make templating easier: It goes
+through a list of tweets, and creates a plist that has the tweet object as well
+as the author object (instead of referencing the author through its username).
 
 @code[lang=lisp](@include[path=../examples/utweet/views.lisp start=32 end=43]())
 
+The index view is very simple: If the user is logged in, find the user object,
+and display their timeline. If the user is not logged in, display the landing
+page.
+
 @code[lang=lisp](@include[path=../examples/utweet/views.lisp start=47 end=57]())
+
+When visiting a user's profile, we find that user by name, get a list of their
+tweets, and render the profile page template. We additionally ask whether the
+user is the logged-in user: This lets us know whether we should display buttons
+to follow unfollow the user.
 
 @code[lang=lisp](@include[path=../examples/utweet/views.lisp start=58 end=69]())
 
-@code[lang=lisp](@include[path=../examples/utweet/views.lisp start=71 end=77]())
+These next views are quite simple, @c(utweet.models) does most of our work.
 
-@code[lang=lisp](@include[path=../examples/utweet/views.lisp start=79 end=85]())
+@code[lang=lisp](@include[path=../examples/utweet/views.lisp start=71 end=85]())
+
+And, finally, the core of the app: Tweeting something. If the user's not logged
+in, we give them an error, otherwise, we create the tweet and redirect them to
+the home page.
 
 @code[lang=lisp](@include[path=../examples/utweet/views.lisp start=87 end=95]())
 
 @begin(section)
 @title(Authentication)
 
+Here we implement all the authentication views. We'll use the
+@link[uri="https://github.com/eudoxia0/cl-pass/"](@c(cl-pass)) library so we
+don't have to concern ourselves with security needs.
+
+The signup view is the most complex: We have to check if a user with that name
+exists and that the supplied passwords match. If both check out, we create the
+user and redirect them to the home page.
+
 @code[lang=lisp](@include[path=../examples/utweet/views.lisp start=99 end=119]())
 
+To sign in, we both check whether a username by that name exists and if the
+password is a match. If so, we log them in and redirect them to their timeline.
+
 @code[lang=lisp](@include[path=../examples/utweet/views.lisp start=121 end=138]())
+
+Signing out is simpler: If the user is logged in, sign them out. Otherwise, do
+nothing. Then redirect them to the home.
 
 @code[lang=lisp](@include[path=../examples/utweet/views.lisp start=140 end=144]())
 
 @end(section)
-
-@end(section)
-
-@begin(section)
-@title(Adding Style)
 
 @end(section)
 
