@@ -2,6 +2,14 @@ title: Lucerne
 description: A web framework for Common Lisp
 baseurl: "/lucerne"
 url: "http://eudoxia.me"
+keywords:
+  - lisp
+  - clack
+  - framework
+  - web framework
+  - lisp web
+  - lisp web framework
+  - common lisp web
 
 markdown: kramdown
 
