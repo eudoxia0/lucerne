@@ -7,6 +7,9 @@ utweet is a small Twitter clone inspired by Flask's
 @link[uri="https://github.com/mitsuhiko/flask/tree/master/examples/minitwit/"](minitwit)
 example.
 
+You can load the app with @c((ql:quickload :lucerne-utweet)) and test it locally
+with @c((lucerne:start utweet.views:app :port 8000)).
+
 @begin(section)
 @title(The Models)
 
