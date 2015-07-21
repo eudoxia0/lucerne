@@ -9,23 +9,18 @@
 
 (defapp app
   :middlewares ((clack.middleware.static:<clack-middleware-static>
-                 :root (asdf:system-relative-pathname :self #p"assets/build/")
+                 :root (asdf:system-relative-pathname :{{name}} #p"assets/")
                  :path "/static/")))
-
-;;; Assets
-
-(rock:defenv :{{name}}
-  :assets ((:jquery :1.11.1))
-  :bundles ((:js
-            :assets ((:jquery :1.11.1))
-            :files (list #p"js/scripts.js")
-            :destination #p"js/scripts.js")
-            (:css
-             :assets ()
-             :files (list #p"css/style.css")
-             :destination #p"css/style.css")))
 
 ;;; Templates
 
+(djula:add-template-directory
+ (asdf:system-relative-pathname :{{name}} #p"templates/"))
+
+(defparameter +index+ (djula:compile-template* "index.html"))
 
 ;;; Views
+
+@route app "/"
+(defview index ()
+  (render-template (+index+)))
