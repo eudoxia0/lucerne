@@ -8,7 +8,7 @@
 ;;; App
 
 (defapp app
-  :middlewares ((<clack-middleware-static>
+  :middlewares ((clack.middleware.static:<clack-middleware-static>
                  :root (asdf:system-relative-pathname :self #p"assets/build/")
                  :path "/static/")))
 
