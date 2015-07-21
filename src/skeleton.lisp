@@ -72,7 +72,7 @@
                         :license license
                         :description description
                         ;; Format the deps for the sys. def. file
-                        :dependencies (format nil "~{:~A~^~%               ~}"
+                        :dependencies (format nil "~{~^~%               :~A~}"
                                               dependencies)
                         :sassp sassp
                         :travisp travisp

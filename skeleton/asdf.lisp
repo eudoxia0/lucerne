@@ -7,7 +7,7 @@
   :homepage "https://github.com/{{ghuser}}/{{name}}"
   :bug-tracker "https://github.com/{{ghuser}}/{{name}}/issues"
   :source-control (:git "git@github.com:{{ghuser}}/{{name}}.git"){{/ghuser}}
-  :depends-on ({{dependencies}})
+  :depends-on (:lucerne{{dependencies}})
   {{#sassp}}
   :defsystem-depends-on (:asdf-linguist)
   {{/sassp}}
