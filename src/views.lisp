@@ -16,10 +16,10 @@
   "The basic not found screen: Returns HTTP 404 and the text 'Not found'."
   (lucerne.http:respond "Not found" :type "text/plain" :status 404))
 
-(defun strip-app-prefix (url app-prefix)
-  (if (> (length app-prefix) 0)
-      (subseq url (1- (length app-prefix)))
-      url))
+(defun strip-app-prefix-and-query-string (url app-prefix)
+  (subseq url
+          (max 0 (1- (length app-prefix)))
+          (position #\? url)))
 
 (defmethod clack:call ((app lucerne.app:base-app) env)
   "Routes the request determined by @cl:param(env) on the application
@@ -28,7 +28,7 @@
          (method (request-method req))
          (prefix (script-name req))
          (uri    (request-uri req))
-         (final-uri (strip-app-prefix uri prefix))
+         (final-uri (strip-app-prefix-and-query-string uri prefix))
          ;; Now, we actually do the dispatching
          (route (myway:dispatch (lucerne.app:routes app)
                                 final-uri
