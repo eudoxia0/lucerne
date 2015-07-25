@@ -21,7 +21,9 @@ lexical let.")
 @cl:param(status) code."
   (list status
         (list :content-type type)
-        (list body)))
+        (typecase body
+          (string (list body))
+          (otherwise body))))
 
 (defun redirect (url &key (status 302))
   "Redirect a user to @cl:param(url), optionally specifying a status code

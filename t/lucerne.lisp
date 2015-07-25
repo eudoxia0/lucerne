@@ -45,7 +45,12 @@
     @route app (:post "/post")
     (defview post-test ()
       (with-params (a b)
-        (respond (format nil "~A ~A" a b))))))
+        (respond (format nil "~A ~A" a b)))))
+  (finishes
+    @route app "/binary"
+    (defview binary-test ()
+      (respond (coerce '(1 2 3) '(vector (unsigned-byte 8)))
+               :type "application/octet-stream"))))
 
 (test (bring-up :depends-on define-routes)
   (is-true
@@ -79,6 +84,9 @@
                                :method :post
                                :parameters '(("a" . "1")
                                              ("b" . "2")))))
+  (is
+   (equalp #(1 2 3)
+           (drakma:http-request (make-url "binary"))))
   (is
    (equal "Not found"
           (drakma:http-request (make-url "no-such-view")))))
