@@ -67,7 +67,7 @@ function @cl:param(fn)."
            ,(first config)
            ,body))))
 
-(defmacro defview (name (&rest args) &rest body)
+(defmacro defview (name (&rest args) &body body)
   "Define a view. The body of the view implicitly has access to the global
 request object @c(*request*)."
   (alexandria:with-gensyms (params)
