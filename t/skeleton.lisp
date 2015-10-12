@@ -1,6 +1,7 @@
 (in-package :cl-user)
 (defpackage lucerne-test.skeleton
-  (:use :cl :fiveam))
+  (:use :cl :fiveam)
+  (:export :skeleton))
 (in-package :lucerne-test.skeleton)
 
 (def-suite skeleton
@@ -57,5 +58,3 @@ github-user
                (probe-file (merge-pathnames #p"assets/css/style.css" app-directory))))
           (when (probe-file app-directory)
             (uiop:delete-directory-tree app-directory :validate t)))))))
-
-(run! 'skeleton)

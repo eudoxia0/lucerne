@@ -60,5 +60,3 @@
 (test bring-down-subapps
   (is-true
    (stop parent-app)))
-
-(run! 'subapps)

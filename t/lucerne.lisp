@@ -2,7 +2,8 @@
 (defpackage lucerne-test
   (:use :cl :lucerne :fiveam)
   (:export :+port+
-           :make-url))
+           :make-url
+           :run-tests))
 (in-package :lucerne-test)
 (annot:enable-annot-syntax)
 
@@ -107,5 +108,3 @@
      (equal status 500)))
   (is-true
    (stop error-app)))
-
-(run! 'basic)

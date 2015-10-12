@@ -3,7 +3,8 @@
   (:use :cl :lucerne :fiveam)
   (:import-from :lucerne-test
                 :+port+
-                :make-url))
+                :make-url)
+  (:export :examples))
 (in-package :lucerne-test.examples)
 
 ;;; Utilities
@@ -110,5 +111,3 @@
                    :cookie-jar cookie-jar))
     ;; Bring it down
     (lucerne:stop utweet.views:app)))
-
-(run! 'examples)

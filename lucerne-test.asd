@@ -13,4 +13,5 @@
                 ((:file "lucerne")
                  (:file "subapps")
                  (:file "examples")
-                 (:file "skeleton")))))
+                 (:file "skeleton")
+                 (:file "final")))))
