@@ -2,6 +2,7 @@
 
 [![Build Status](https://travis-ci.org/eudoxia0/lucerne.svg?branch=master)](https://travis-ci.org/eudoxia0/lucerne)
 [![Coverage Status](https://coveralls.io/repos/eudoxia0/lucerne/badge.svg?branch=master)](https://coveralls.io/r/eudoxia0/lucerne?branch=master)
+[![Quicklisp](http://quickdocs.org/badge/lucerne.svg)](http://quickdocs.org/lucerne/)
 
 Read the [docs](http://eudoxia.me/lucerne/docs/overview.html).
 
