@@ -4,6 +4,7 @@
   (:export :app)
   (:documentation "Main {{name}} code."))
 (in-package :{{name}})
+(annot:enable-annot-syntax)
 
 ;;; App
 
