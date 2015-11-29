@@ -31,7 +31,8 @@
 
 (defun parse-systems-list (systems-list)
   (loop for system-name
-        in (split-sequence:split-sequence #\, systems-list)
+        in (remove-if (lambda (x) (string= "" x))
+                      (split-sequence:split-sequence #\, systems-list))
         collecting
         (strip-whitespace system-name)))
 
@@ -43,6 +44,7 @@
            (let ((string (apply #'format (append (list nil format-string)
                                                  args))))
              (format t "~%~A: " string)
+             (finish-output nil)
              (read-line)))
          (yes-or-no (format-string &rest args)
            (apply #'yes-or-no-p (cons format-string args))))
