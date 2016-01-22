@@ -14,7 +14,7 @@ error -- This is particularly common in testing. By using this system, we don't
 leak ports and prevent 'address in use' errors."))
 (in-package :lucerne.ctl)
 
-(defmethod start ((app base-app) &key (port 8000) (server :hunchentoot) debug)
+(defmethod start ((app base-app) &key (port 8000) (server :hunchentoot) debug silent)
   "Bring up @cl:param(app), by default on @cl:param(port) 8000. If the server
 was not running, it returns @c(T). If the server was running, it restarts it and
 returns @c(NIL)."
@@ -34,7 +34,8 @@ returns @c(NIL)."
                                clack-app)))
            :port port
            :server server
-           :use-default-middlewares nil))
+           :use-default-middlewares nil
+           :silent silent))
     (sleep 1)
     ;; If it was rebooted, return nil. Otherwise t.
     (not rebooted)))
