@@ -12,7 +12,7 @@ Lucerne is a web application framework built on
 @term(Built on Clack)
 @def(Lucerne uses @link[uri=http://clacklisp.org/](Clack), an HTTP server
 abstraction, which enables it to use any server backend supported by Clack
-@l(ndash) from Hunchentoot the the very fast
+@l(ndash) from Hunchentoot to the the very fast
 @link[uri="https://github.com/fukamachi/woo"](Woo).)
 
 @term(Inspired by Flask)
