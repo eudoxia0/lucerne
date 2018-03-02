@@ -4,7 +4,7 @@
 [![Coverage Status](https://coveralls.io/repos/eudoxia0/lucerne/badge.svg?branch=master)](https://coveralls.io/r/eudoxia0/lucerne?branch=master)
 [![Quicklisp](http://quickdocs.org/badge/lucerne.svg)](http://quickdocs.org/lucerne/)
 
-Read the [docs](http://eudoxia.me/lucerne/docs/overview.html).
+Read the [docs](http://borretti.me/lucerne/docs/overview.html).
 
 ## Usage
 
@@ -24,6 +24,6 @@ Read the [docs](http://eudoxia.me/lucerne/docs/overview.html).
 
 # License
 
-Copyright (c) 2014-2015 Fernando Borretti (eudoxiahp@gmail.com)
+Copyright (c) 2014-2018 Fernando Borretti (eudoxiahp@gmail.com)
 
 Licensed under the MIT License.
